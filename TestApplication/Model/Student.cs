@@ -16,8 +16,16 @@ namespace TestApplication.Model
         public virtual ICollection<Enrollment> Enrollments { get; set; }
 
         /// <summary>
-        /// GOTCHA: Computed property. EF generally complains when such a property is referenced in a LINQ expression
+        /// GOTCHA: Read-only property (expression-bodied member form). EF generally complains when such a property is referenced in a LINQ expression
         /// </summary>
         public string DisplayName => this.FirstMidName + " " + this.LastName;
+
+        /// <summary>
+        /// GOTCHA: Read-only property (expression-bodied member form). EF generally complains when such a property is referenced in a LINQ expression
+        /// </summary>
+        public string DisplayName2
+        {
+            get { return this.FirstMidName + " " + this.LastName; }
+        }
     }
 }

@@ -129,4 +129,13 @@
     <value>Type name contains lowercase letters</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="EFLINQ001_DESC" xml:space="preserve">
+    <value>Read-Only properties should not participate in IQueryable LINQ expressions (where clauses, joins or projections). Such properties will cause the EF LINQ provider to throw a NotSupportedException as they are not translatable to SQL</value>
+  </data>
+  <data name="EFLINQ001_MSGFORMAT" xml:space="preserve">
+    <value>Property '{0}' in type '{1}' not translatable in LINQ to Entities</value>
+  </data>
+  <data name="EFLINQ001_TITLE" xml:space="preserve">
+    <value>Read-Only EF code first property</value>
+  </data>
 </root>
