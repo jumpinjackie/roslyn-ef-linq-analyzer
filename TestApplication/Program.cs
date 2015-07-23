@@ -18,6 +18,9 @@ namespace TestApplication
                 Console.WriteLine("Running test cases");
 
                 TestCase_ProjectionWithReadOnlyProperty(context);
+                TestCase_ProjectionWithUnsupportedMethod(context);
+                TestCase_WhereClauseWithReadOnlyProperty(context);
+                TestCase_WhereClauseWithUnsupportedMethod(context);
 
                 Console.WriteLine("Press any key to continue");
                 Console.Read();
@@ -30,6 +33,38 @@ namespace TestApplication
             foreach (var student in context.Students.Select(s => new { Name = s.DisplayName, s.EnrollmentDate }))
             {
                 Console.WriteLine($"\t{student.Name} enrolled on {student.EnrollmentDate}");
+            }
+        }
+
+        static void TestCase_ProjectionWithUnsupportedMethod(SchoolContext context)
+        {
+            Console.WriteLine("Test case: Projection with unsupported method");
+            foreach (var student in context.Students.Select(s => new { s.FirstMidName, s.LastName, EnrolDate = s.EnrollmentDate.ToString("MMMM dd, yyyy") }))
+            {
+                Console.WriteLine($"\t{student.FirstMidName} {student.LastName} enrolled on {student.EnrolDate}");
+            }
+        }
+
+        static void TestCase_WhereClauseWithReadOnlyProperty(SchoolContext context)
+        {
+            Console.WriteLine("Test case: Where clause with read-only property");
+            foreach (var student in context.Students.Where(s => s.DisplayName.Contains("a")))
+            {
+                Console.WriteLine($"\t{student.FirstMidName} {student.LastName} enrolled on {student.EnrollmentDate}");
+            }
+        }
+
+        static bool StringContains(string str, string value)
+        {
+            return str.Contains(value);
+        }
+
+        static void TestCase_WhereClauseWithUnsupportedMethod(SchoolContext context)
+        {
+            Console.WriteLine("Test case: Where clause with unsupported method");
+            foreach (var student in context.Students.Where(s => StringContains(s.FirstMidName, "A")))
+            {
+                Console.WriteLine($"\t{student.FirstMidName} {student.LastName} enrolled on {student.EnrollmentDate}");
             }
         }
     }

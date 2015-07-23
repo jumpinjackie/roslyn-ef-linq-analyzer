@@ -16,7 +16,7 @@ namespace TestApplication.Model
         public virtual ICollection<Enrollment> Enrollments { get; set; }
 
         /// <summary>
-        /// Computed property. EF generally complains when such a property is referenced in a LINQ expression
+        /// GOTCHA: Computed property. EF generally complains when such a property is referenced in a LINQ expression
         /// </summary>
         public string DisplayName => this.FirstMidName + " " + this.LastName;
     }
