@@ -14,5 +14,10 @@ namespace TestApplication.Model
         public DateTime EnrollmentDate { get; set; }
 
         public virtual ICollection<Enrollment> Enrollments { get; set; }
+
+        /// <summary>
+        /// Computed property. EF generally complains when such a property is referenced in a LINQ expression
+        /// </summary>
+        public string DisplayName => this.FirstMidName + " " + this.LastName;
     }
 }
