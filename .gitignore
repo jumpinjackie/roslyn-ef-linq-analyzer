@@ -1,0 +1,11 @@
+/TestResults
+/packages
+/.vs
+/EFLinqAnalyzer/EFLinqAnalyzer/obj
+/EFLinqAnalyzer/EFLinqAnalyzer/bin
+/EFLinqAnalyzer/EFLinqAnalyzer.Test/obj
+/EFLinqAnalyzer/EFLinqAnalyzer.Test/bin
+/EFLinqAnalyzer/EFLinqAnalyzer.Vsix/obj
+/EFLinqAnalyzer/EFLinqAnalyzer.Vsix/bin
+/TestApplication/obj
+/TestApplication/bin

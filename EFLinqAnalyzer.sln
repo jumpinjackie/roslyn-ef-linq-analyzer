@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFLinqAnalyzer", "EFLinqAnalyzer\EFLinqAnalyzer\EFLinqAnalyzer.csproj", "{84FA2DCE-DA6B-4D2E-A138-7218D5A518DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFLinqAnalyzer.Test", "EFLinqAnalyzer\EFLinqAnalyzer.Test\EFLinqAnalyzer.Test.csproj", "{5E213357-9D9A-48D0-92FD-84C7C450AD50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFLinqAnalyzer.Vsix", "EFLinqAnalyzer\EFLinqAnalyzer.Vsix\EFLinqAnalyzer.Vsix.csproj", "{77635B48-46A1-41B0-AC53-AE26B07B57CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "TestApplication\TestApplication.csproj", "{56D1C905-51BA-4866-B966-4ECABC7F97A4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{84FA2DCE-DA6B-4D2E-A138-7218D5A518DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84FA2DCE-DA6B-4D2E-A138-7218D5A518DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84FA2DCE-DA6B-4D2E-A138-7218D5A518DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84FA2DCE-DA6B-4D2E-A138-7218D5A518DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E213357-9D9A-48D0-92FD-84C7C450AD50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E213357-9D9A-48D0-92FD-84C7C450AD50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E213357-9D9A-48D0-92FD-84C7C450AD50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E213357-9D9A-48D0-92FD-84C7C450AD50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77635B48-46A1-41B0-AC53-AE26B07B57CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77635B48-46A1-41B0-AC53-AE26B07B57CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77635B48-46A1-41B0-AC53-AE26B07B57CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77635B48-46A1-41B0-AC53-AE26B07B57CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56D1C905-51BA-4866-B966-4ECABC7F97A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56D1C905-51BA-4866-B966-4ECABC7F97A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56D1C905-51BA-4866-B966-4ECABC7F97A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56D1C905-51BA-4866-B966-4ECABC7F97A4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
