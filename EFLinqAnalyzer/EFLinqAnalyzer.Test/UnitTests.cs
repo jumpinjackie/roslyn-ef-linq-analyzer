@@ -121,7 +121,7 @@ namespace EFLinqAnalyzer.Test
             {
                 Id = "EFLINQ001",
                 Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBar", "Thing"),
-                Severity = DiagnosticSeverity.Warning,
+                Severity = DiagnosticSeverity.Info,
                 Locations =
                     new[] {
                             new DiagnosticResultLocation("Test0.cs", 22, 13)
@@ -129,6 +129,115 @@ namespace EFLinqAnalyzer.Test
             };
 
             VerifyCSharpDiagnostic(test, expected);
+        }
+
+        [TestMethod]
+        public void TestCase_EFCodeFirstModelClassWithReadOnlyPropertyAndExprBodyMember()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+
+            public string FooBar
+            {
+                get { return this.Foo + "" "" + this.Bar; }
+            }
+
+            public string FooBarExpr => this.Foo + "" "" + this.Bar;
+        }
+    }";
+            VerifyCSharpDiagnostic(test, 
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBar", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 22, 13)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBarExpr", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 27, 13)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void TestCase_EFCodeFirstModelClassWithReadOnlyPropertyAndExprBodyMember_FullyQualifiedEFClassNames()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : System.Data.Entity.DbContext
+        {
+            public System.Data.Entity.DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+
+            public string FooBar
+            {
+                get { return this.Foo + "" "" + this.Bar; }
+            }
+
+            public string FooBarExpr => this.Foo + "" "" + this.Bar;
+        }
+    }";
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBar", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 21, 13)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBarExpr", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 26, 13)
+                            }
+                });
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()

@@ -18,7 +18,7 @@ namespace EFLinqAnalyzer
             title: new LocalizableResourceString(nameof(Resources.EFLINQ001_TITLE), Resources.ResourceManager, typeof(Resources)),
             messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ001_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
             category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Warning,
+            defaultSeverity: DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ001_DESC), Resources.ResourceManager, typeof(Resources)));
 
@@ -33,7 +33,43 @@ namespace EFLinqAnalyzer
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterSyntaxNodeAction(AnalyzeEFCodeFirstModelClassReadOnlyProperty, SyntaxKind.PropertyDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeLinqExpression, SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
+            //context.RegisterSyntaxNodeAction(AnalyzeEFCodeFirstModelClassReadOnlyProperty, SyntaxKind.ClassDeclaration);
+            //context.RegisterSyntaxNodeAction(AnalyzeLinqExpression, SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
+            //context.RegisterCompilationAction(OnCompilation);
+        }
+
+        private static void OnCompilation(CompilationAnalysisContext context)
+        {
+            /*
+            var compilation = context.Compilation;
+            var assemblies = compilation.ReferencedAssemblyNames;
+            //Entity Framework is referenced
+            if (assemblies.Any(asm => asm.Name == "EntityFramework"))
+            {
+                
+            }
+            */
+        }
+
+        private static void AnalyzeEFCodeFirstModelClassReadOnlyProperty_(SyntaxNodeAnalysisContext context)
+        {
+            var clsNode = context.Node as ClassDeclarationSyntax;
+            if (clsNode != null)
+            {
+                if (clsNode.BaseList != null)
+                {
+                    //This is a class that inherits from DbContext
+                    if (clsNode?.BaseList?.Types.OfType<BaseTypeSyntax>().Where(p => p.Type is IdentifierNameSyntax).Select(p => (IdentifierNameSyntax)p.Type).Any(id => id.Identifier.ValueText == "DbContext") == true)
+                    {
+                        var dbSetProperties = clsNode
+                            .DescendantNodes()
+                            .OfType<PropertyDeclarationSyntax>()
+                            .Where(p => p.Type is GenericNameSyntax)
+                            .Where(p => ((GenericNameSyntax)p.Type).Identifier.ValueText == "DbSet");
+                        
+                    }
+                }
+            }
         }
 
         private static void AnalyzeEFCodeFirstModelClassReadOnlyProperty(SyntaxNodeAnalysisContext context)
@@ -76,13 +112,33 @@ namespace EFLinqAnalyzer
         
         private static bool IsClassPartOfEFCodeFirstModel(ClassDeclarationSyntax classType, SyntaxNodeAnalysisContext context)
         {
-            //TODO: This is obviously not how we know :) This is currently just a stub so that diagnostic will report
-            //in the places we expect. So the nitty gritty to know for real:
-            //
-            // - How do we find usages of this class?
-            //   - In particular, how can we find property usages where this class is the generic type of a DbSet<T>?
-            // - If we find such property usage, can can we determine if the parent class derives from System.Data.Entity.DbContext?
-            return new string[] { "Thing", "Student" }.Contains(classType.Identifier.ValueText);
+            //Find classes that derive from DbContext
+            var symbols = context.SemanticModel
+                                 .LookupSymbols(classType.Identifier.Span.Start + 1)
+                                 .OfType<ITypeSymbol>()
+                                 .Where(t => t?.BaseType?.Name == "DbContext");
+            
+            foreach (var clsSym in symbols)
+            {
+                //Get all DbSet properties
+                var dbSetProperties = clsSym.GetMembers()
+                                            .OfType<IPropertySymbol>()
+                                            .Where(p => p?.Type?.Name == "DbSet");
+
+                foreach (var propSym in dbSetProperties)
+                {
+                    INamedTypeSymbol nts = propSym.Type as INamedTypeSymbol;
+                    if (nts != null)
+                    {
+                        //Is DbSet<T> where T is the type of our class
+                        if (nts.TypeArguments.Any(ta => ta.Name == classType.Identifier.ValueText))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private static void AnalyzeLinqExpression(SyntaxNodeAnalysisContext context)
