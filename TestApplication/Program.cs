@@ -30,7 +30,7 @@ namespace TestApplication
         static void TestCase_ProjectionWithReadOnlyProperty(SchoolContext context)
         {
             Console.WriteLine("Test case: Projection with read-only property");
-            foreach (var student in context.Students.Select(s => new { Name = s.DisplayName, s.EnrollmentDate }))
+            foreach (var student in context.Students.Select(s => new { Name = s.DisplayName, s.DisplayName2, s.EnrollmentDate }))
             {
                 Console.WriteLine($"\t{student.Name} enrolled on {student.EnrollmentDate}");
             }
@@ -39,7 +39,7 @@ namespace TestApplication
         static void TestCase_ProjectionWithUnsupportedMethod(SchoolContext context)
         {
             Console.WriteLine("Test case: Projection with unsupported method");
-            foreach (var student in context.Students.Select(s => new { s.FirstMidName, s.LastName, EnrolDate = s.EnrollmentDate.ToString("MMMM dd, yyyy") }))
+            foreach (var student in context.Students.Select(s => new { s.FirstMidName, s.LastName, EnrolDate = s.EnrollmentDate.GetHashCode() }))
             {
                 Console.WriteLine($"\t{student.FirstMidName} {student.LastName} enrolled on {student.EnrolDate}");
             }
@@ -48,7 +48,7 @@ namespace TestApplication
         static void TestCase_WhereClauseWithReadOnlyProperty(SchoolContext context)
         {
             Console.WriteLine("Test case: Where clause with read-only property");
-            foreach (var student in context.Students.Where(s => s.DisplayName.Contains("a")))
+            foreach (var student in context.Students.Where(s => s.DisplayName.Contains("a") || s.DisplayName2.Contains("b")))
             {
                 Console.WriteLine($"\t{student.FirstMidName} {student.LastName} enrolled on {student.EnrollmentDate}");
             }
