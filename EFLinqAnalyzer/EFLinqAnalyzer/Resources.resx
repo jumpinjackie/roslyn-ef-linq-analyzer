@@ -147,4 +147,22 @@
   <data name="EFLINQ002_TITLE" xml:space="preserve">
     <value>Read-Only property used within LINQ to Entities expression</value>
   </data>
+  <data name="EFLINQ003_DESC" xml:space="preserve">
+    <value>Only a specific subset of methods are allowed within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ003_MSGFORMAT" xml:space="preserve">
+    <value>Static method '{0}' cannot be used within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ003_TITLE" xml:space="preserve">
+    <value>Invalid static method call within LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ004_DESC" xml:space="preserve">
+    <value>Only a specific subset of methods are allowed within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ004_MSGFORMAT" xml:space="preserve">
+    <value>Method '{0}' cannot be used within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ004_TITLE" xml:space="preserve">
+    <value>Invalid method call on instance within LINQ to Entities expression</value>
+  </data>
 </root>

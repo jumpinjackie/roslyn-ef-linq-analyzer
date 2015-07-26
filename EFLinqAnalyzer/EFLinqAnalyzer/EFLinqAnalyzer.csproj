@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CanonicalMethodNames.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="EFCodeFirstClassInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

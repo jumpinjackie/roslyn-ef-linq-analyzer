@@ -21,8 +21,8 @@ namespace EFLinqAnalyzer
             defaultSeverity: DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ001_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        private static DiagnosticDescriptor CodeFirstClassReadOnlyPropertyUsage = new DiagnosticDescriptor(
+        
+        private static DiagnosticDescriptor CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
             id: "EFLINQ002",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ002_TITLE), Resources.ResourceManager, typeof(Resources)),
             messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ002_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
@@ -31,11 +31,33 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ002_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        private static DiagnosticDescriptor CodeFirstUnsupportedStaticMethodInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ003",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ003_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ003_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ003_DESC), Resources.ResourceManager, typeof(Resources)));
+
+        private static DiagnosticDescriptor CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ004",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ003_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ003_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ003_DESC), Resources.ResourceManager, typeof(Resources)));
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
             {
-                return ImmutableArray.Create(CodeFirstClassReadOnlyRule, CodeFirstClassReadOnlyPropertyUsage);
+                return ImmutableArray.Create(
+                    CodeFirstClassReadOnlyRule,
+                    CodeFirstClassReadOnlyPropertyUsageRule,
+                    CodeFirstUnsupportedStaticMethodInLinqExpressionRule,
+                    CodeFirstUnsupportedInstanceMethodInLinqExpressionRule);
             }
         }
 
@@ -44,20 +66,6 @@ namespace EFLinqAnalyzer
             context.RegisterSyntaxNodeAction(AnalyzeEFCodeFirstModelClassReadOnlyProperty, SyntaxKind.PropertyDeclaration);
             //context.RegisterSyntaxNodeAction(AnalyzeEFCodeFirstModelClassReadOnlyProperty, SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeLinqExpression, SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
-            //context.RegisterCompilationAction(OnCompilation);
-        }
-
-        private static void OnCompilation(CompilationAnalysisContext context)
-        {
-            /*
-            var compilation = context.Compilation;
-            var assemblies = compilation.ReferencedAssemblyNames;
-            //Entity Framework is referenced
-            if (assemblies.Any(asm => asm.Name == "EntityFramework"))
-            {
-                
-            }
-            */
         }
 
         private static void AnalyzeEFCodeFirstModelClassReadOnlyProperty_(SyntaxNodeAnalysisContext context)
@@ -152,7 +160,10 @@ namespace EFLinqAnalyzer
 
         static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context)
         {
-            var accessNodes = lambda.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
+            var accessNodes = lambda.DescendantNodes()
+                                    .OfType<MemberAccessExpressionSyntax>();
+            var methodCallNodes = lambda.DescendantNodes()
+                                        .OfType<InvocationExpressionSyntax>();
             var parameterNodes = lambda.DescendantNodes()
                                        .OfType<ParameterSyntax>()
                                        .ToDictionary(p => p.Identifier.ValueText, p => p);
@@ -175,10 +186,41 @@ namespace EFLinqAnalyzer
 
                 if (!bValid)
                 {
-                    var diagnostic = Diagnostic.Create(CodeFirstClassReadOnlyPropertyUsage, node.GetLocation(), memberName.Identifier.ValueText, rootQueryableType.Name);
+                    var diagnostic = Diagnostic.Create(CodeFirstClassReadOnlyPropertyUsageRule, node.GetLocation(), memberName.Identifier.ValueText, rootQueryableType.Name);
                     context.ReportDiagnostic(diagnostic);
                 }
             }
+
+            foreach (var node in methodCallNodes)
+            {
+                string methodName = null;
+                var memberExpr = node.Expression as MemberAccessExpressionSyntax;
+                var identExpr = node.Expression as IdentifierNameSyntax;
+                if (memberExpr != null)
+                {
+                    methodName = memberExpr?.Name?.Identifier.ValueText;
+                    bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType);
+                    if (!bValid)
+                    {
+                        var diagnostic = Diagnostic.Create(CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
+                        context.ReportDiagnostic(diagnostic);
+                    }
+                }
+                else if (identExpr != null) //A non-instance (static) method call, most certainly illegal
+                {
+                    if (!CanonicalMethodNames.IsKnownMethod(identExpr))
+                    {
+                        methodName = identExpr.Identifier.ValueText;
+                        var diagnostic = Diagnostic.Create(CodeFirstUnsupportedStaticMethodInLinqExpressionRule, node.GetLocation(), methodName);
+                        context.ReportDiagnostic(diagnostic);
+                    }
+                }
+            }
+        }
+
+        private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType)
+        {
+            return CanonicalMethodNames.IsKnownMethod(node, memberExpr);
         }
 
         private static void AnalyzeLinqExpression(SyntaxNodeAnalysisContext context)
@@ -212,7 +254,8 @@ namespace EFLinqAnalyzer
                                     case "Where": //Filter
                                         {
                                             var si = context.SemanticModel.GetSymbolInfo(memberExpr.Expression);
-                                            //Is this Where() called on a property?
+                                            
+                                            //Is this method called on a property?
                                             var pts = si.Symbol as IPropertySymbol;
                                             if (pts != null)
                                             {
@@ -238,14 +281,17 @@ namespace EFLinqAnalyzer
                                                             //If it has potential EF LINQ minefields then do the actual check
                                                             var clsInfo = new EFCodeFirstClassInfo(clsSymbol);
                                                             clsInfo.AddProperties(clsSymbols.OfType<IPropertySymbol>());
-                                                            if (clsInfo.HasReadOnlyProperties())
-                                                            {
-                                                                //Okay now let's see if this lambda is valid in the EF context
-                                                                ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
-                                                            }
+                                                            //Okay now let's see if this lambda is valid in the EF context
+                                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
                                                         }
                                                     }
                                                 }
+                                            }
+                                            else
+                                            {
+                                                //TODO: Need to also check if the method is called on a IQueryable<T>
+                                                //that ultimately was assigned from a DbSet<T> property of a class that
+                                                //derives from DbContext
                                             }
                                         }
                                         break;

@@ -141,5 +141,59 @@ namespace EFLinqAnalyzer {
                 return ResourceManager.GetString("EFLINQ002_TITLE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only a specific subset of methods are allowed within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ003_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ003_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static method &apos;{0}&apos; cannot be used within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ003_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ003_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid static method call within LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ003_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ003_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only a specific subset of methods are allowed within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ004_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ004_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method &apos;{0}&apos; cannot be used within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ004_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ004_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid method call on instance within LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ004_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ004_TITLE", resourceCulture);
+            }
+        }
     }
 }
