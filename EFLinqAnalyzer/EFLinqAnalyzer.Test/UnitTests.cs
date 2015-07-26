@@ -309,7 +309,7 @@ namespace EFLinqAnalyzer.Test
                 {
                     Id = "EFLINQ002",
                     Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "FooBar", "Thing"),
-                    Severity = DiagnosticSeverity.Warning,
+                    Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
                                 new DiagnosticResultLocation("Test0.cs", 36, 59)
@@ -319,7 +319,7 @@ namespace EFLinqAnalyzer.Test
                 {
                     Id = "EFLINQ002",
                     Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "FooBarExpr", "Thing"),
-                    Severity = DiagnosticSeverity.Warning,
+                    Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
                                 new DiagnosticResultLocation("Test0.cs", 37, 60)
@@ -395,7 +395,7 @@ namespace EFLinqAnalyzer.Test
                 {
                     Id = "EFLINQ002",
                     Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "FooBar", "Thing"),
-                    Severity = DiagnosticSeverity.Warning,
+                    Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
                                 new DiagnosticResultLocation("Test0.cs", 36, 80)
@@ -405,7 +405,7 @@ namespace EFLinqAnalyzer.Test
                 {
                     Id = "EFLINQ002",
                     Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "FooBarExpr", "Thing"),
-                    Severity = DiagnosticSeverity.Warning,
+                    Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
                                 new DiagnosticResultLocation("Test0.cs", 36, 90)

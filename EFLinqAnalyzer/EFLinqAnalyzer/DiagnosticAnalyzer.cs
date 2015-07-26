@@ -27,7 +27,7 @@ namespace EFLinqAnalyzer
             title: new LocalizableResourceString(nameof(Resources.EFLINQ002_TITLE), Resources.ResourceManager, typeof(Resources)),
             messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ002_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
             category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Warning,
+            defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ002_DESC), Resources.ResourceManager, typeof(Resources)));
 
