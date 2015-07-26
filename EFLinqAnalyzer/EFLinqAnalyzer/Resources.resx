@@ -138,4 +138,13 @@
   <data name="EFLINQ001_TITLE" xml:space="preserve">
     <value>Read-Only EF code first property</value>
   </data>
+  <data name="EFLINQ002_DESC" xml:space="preserve">
+    <value>Read-Only properties are not translatable to SQL in LINQ to Entities and will cause a NotSupportedException to be thrown by a EF LINQ provider</value>
+  </data>
+  <data name="EFLINQ002_MSGFORMAT" xml:space="preserve">
+    <value>Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ002_TITLE" xml:space="preserve">
+    <value>Read-Only property used within LINQ to Entities expression</value>
+  </data>
 </root>

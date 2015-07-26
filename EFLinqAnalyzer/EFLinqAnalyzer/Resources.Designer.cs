@@ -114,5 +114,32 @@ namespace EFLinqAnalyzer {
                 return ResourceManager.GetString("EFLINQ001_TITLE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read-Only properties are not translatable to SQL in LINQ to Entities and will cause a NotSupportedException to be thrown by a EF LINQ provider.
+        /// </summary>
+        internal static string EFLINQ002_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ002_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read-Only property &apos;{0}&apos; of type &apos;{1}&apos; used in LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ002_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ002_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read-Only property used within LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ002_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ002_TITLE", resourceCulture);
+            }
+        }
     }
 }
