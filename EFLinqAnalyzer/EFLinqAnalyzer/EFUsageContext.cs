@@ -29,7 +29,7 @@ namespace EFLinqAnalyzer
                                                        .SourceSpan
                                                        .Start)
                                  .OfType<INamedTypeSymbol>()
-                                 .Where(t => t.BaseType != null && t.BaseType.Name == "DbContext");
+                                 .Where(t => t?.BaseType?.Name == "DbContext");
 
             _dbContextSymbols = new ReadOnlyCollection<INamedTypeSymbol>(symbols.ToList());
 

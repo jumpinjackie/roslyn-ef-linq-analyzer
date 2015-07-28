@@ -94,31 +94,9 @@ namespace EFLinqAnalyzer
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterSyntaxNodeAction(AnalyzeEFCodeFirstModelClassReadOnlyProperty, SyntaxKind.PropertyDeclaration);
-            //context.RegisterSyntaxNodeAction(AnalyzeEFCodeFirstModelClassReadOnlyProperty, SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeLinqExpression, SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
         }
-
-        private static void AnalyzeEFCodeFirstModelClassReadOnlyProperty_(SyntaxNodeAnalysisContext context)
-        {
-            var clsNode = context.Node as ClassDeclarationSyntax;
-            if (clsNode != null)
-            {
-                if (clsNode.BaseList != null)
-                {
-                    //This is a class that inherits from DbContext
-                    if (clsNode?.BaseList?.Types.OfType<BaseTypeSyntax>().Where(p => p.Type is IdentifierNameSyntax).Select(p => (IdentifierNameSyntax)p.Type).Any(id => id.Identifier.ValueText == "DbContext") == true)
-                    {
-                        var dbSetProperties = clsNode
-                            .DescendantNodes()
-                            .OfType<PropertyDeclarationSyntax>()
-                            .Where(p => p.Type is GenericNameSyntax)
-                            .Where(p => ((GenericNameSyntax)p.Type).Identifier.ValueText == "DbSet");
-                        
-                    }
-                }
-            }
-        }
-
+        
         private static void AnalyzeEFCodeFirstModelClassReadOnlyProperty(SyntaxNodeAnalysisContext context)
         {
             var propNode = context.Node as PropertyDeclarationSyntax;
@@ -170,7 +148,7 @@ namespace EFLinqAnalyzer
                 //Get all DbSet properties
                 var dbSetProperties = clsSym.GetMembers()
                                             .OfType<IPropertySymbol>()
-                                            .Where(p => p?.Type?.Name == "DbSet");
+                                            .Where(p => p?.Type?.MetadataName == "DbSet`1");
 
                 foreach (var propSym in dbSetProperties)
                 {
@@ -301,10 +279,10 @@ namespace EFLinqAnalyzer
                                                 if (nts != null)
                                                 {
                                                     //Like a DbSet<T>?
-                                                    if (nts.Name == "DbSet" && nts.TypeArguments.Length == 1)
+                                                    if (nts.MetadataName == "DbSet`1")
                                                     {
                                                         //That is part of a class derived from DbContext?
-                                                        if (pts?.ContainingType?.BaseType.Name == "DbContext")
+                                                        if (pts?.ContainingType?.BaseType?.Name == "DbContext")
                                                         {
                                                             var typeArg = nts.TypeArguments[0];
                                                             //Let's give our method some assistance, by checking what T actually is
@@ -322,7 +300,7 @@ namespace EFLinqAnalyzer
                                                 {
                                                     //This is some generic type with one type argument
                                                     var typeArg = nts.TypeArguments[0];
-                                                    if (nts.Name == "DbSet")
+                                                    if (nts.MetadataName == "DbSet`1")
                                                     {
                                                         //TODO: Should still actually check that it is ultimately assigned
                                                         //from a DbSet<T> property of a DbContext derived class
