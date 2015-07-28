@@ -308,7 +308,7 @@ namespace EFLinqAnalyzer
                                                         var clsInfo = efContext.BuildEFClassInfo(typeArg);
                                                         ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
                                                     }
-                                                    else if (nts.Name == "IQueryable")
+                                                    else if (nts.MetadataName == "IQueryable`1")
                                                     {
                                                         var clsInfo = efContext.BuildEFClassInfo(typeArg);
                                                         ValidateLinqToEntitiesExpression(lambda, clsInfo, context, treatAsWarning: true);
