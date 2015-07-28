@@ -13,7 +13,7 @@ namespace EFLinqAnalyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EFLinqAnalyzerAnalyzer : DiagnosticAnalyzer
     {
-        private static DiagnosticDescriptor CodeFirstClassReadOnlyRule = new DiagnosticDescriptor(
+        private static DiagnosticDescriptor Info_CodeFirstClassReadOnlyRule = new DiagnosticDescriptor(
             id: "EFLINQ001",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ001_TITLE), Resources.ResourceManager, typeof(Resources)),
             messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ001_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
@@ -22,7 +22,7 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ001_DESC), Resources.ResourceManager, typeof(Resources)));
         
-        private static DiagnosticDescriptor CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
+        private static DiagnosticDescriptor Error_CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
             id: "EFLINQ002",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ002_TITLE), Resources.ResourceManager, typeof(Resources)),
             messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ002_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
@@ -31,7 +31,7 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ002_DESC), Resources.ResourceManager, typeof(Resources)));
 
-        private static DiagnosticDescriptor CodeFirstUnsupportedStaticMethodInLinqExpressionRule = new DiagnosticDescriptor(
+        private static DiagnosticDescriptor Error_CodeFirstUnsupportedStaticMethodInLinqExpressionRule = new DiagnosticDescriptor(
             id: "EFLINQ003",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ003_TITLE), Resources.ResourceManager, typeof(Resources)),
             messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ003_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
@@ -40,7 +40,7 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ003_DESC), Resources.ResourceManager, typeof(Resources)));
 
-        private static DiagnosticDescriptor CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
+        private static DiagnosticDescriptor Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
             id: "EFLINQ004",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ003_TITLE), Resources.ResourceManager, typeof(Resources)),
             messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ003_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
@@ -49,15 +49,45 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ003_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        private static DiagnosticDescriptor Warning_CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
+            id: "EFLINQ005",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ005_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ005_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ005_DESC), Resources.ResourceManager, typeof(Resources)));
+
+        private static DiagnosticDescriptor Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ006",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ006_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ006_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ006_DESC), Resources.ResourceManager, typeof(Resources)));
+
+        private static DiagnosticDescriptor Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ007",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ007_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ007_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ007_DESC), Resources.ResourceManager, typeof(Resources)));
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
             {
                 return ImmutableArray.Create(
-                    CodeFirstClassReadOnlyRule,
-                    CodeFirstClassReadOnlyPropertyUsageRule,
-                    CodeFirstUnsupportedStaticMethodInLinqExpressionRule,
-                    CodeFirstUnsupportedInstanceMethodInLinqExpressionRule);
+                    Info_CodeFirstClassReadOnlyRule,
+                    Error_CodeFirstClassReadOnlyPropertyUsageRule,
+                    Error_CodeFirstUnsupportedStaticMethodInLinqExpressionRule,
+                    Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule,
+                    Warning_CodeFirstClassReadOnlyPropertyUsageRule,
+                    Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule,
+                    Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule);
             }
         }
 
@@ -104,7 +134,7 @@ namespace EFLinqAnalyzer
                         if (declCls != null && IsClassPartOfEFCodeFirstModel(declCls, context))
                         {
                             // For all such symbols, produce a diagnostic.
-                            var diagnostic = Diagnostic.Create(CodeFirstClassReadOnlyRule, propNode.GetLocation(), propNode.Identifier.ValueText, declCls.Identifier.ValueText);
+                            var diagnostic = Diagnostic.Create(Info_CodeFirstClassReadOnlyRule, propNode.GetLocation(), propNode.Identifier.ValueText, declCls.Identifier.ValueText);
                             context.ReportDiagnostic(diagnostic);
                         }
                     }
@@ -119,7 +149,7 @@ namespace EFLinqAnalyzer
                         if (declCls != null && IsClassPartOfEFCodeFirstModel(declCls, context))
                         {
                             // For all such symbols, produce a diagnostic.
-                            var diagnostic = Diagnostic.Create(CodeFirstClassReadOnlyRule, propNode.GetLocation(), propNode.Identifier.ValueText, declCls.Identifier.ValueText);
+                            var diagnostic = Diagnostic.Create(Info_CodeFirstClassReadOnlyRule, propNode.GetLocation(), propNode.Identifier.ValueText, declCls.Identifier.ValueText);
                             context.ReportDiagnostic(diagnostic);
                         }
                     }
@@ -158,7 +188,7 @@ namespace EFLinqAnalyzer
             return false;
         }
 
-        static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context)
+        static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, bool treatAsWarning = false)
         {
             var accessNodes = lambda.DescendantNodes()
                                     .OfType<MemberAccessExpressionSyntax>();
@@ -186,7 +216,7 @@ namespace EFLinqAnalyzer
 
                 if (!bValid)
                 {
-                    var diagnostic = Diagnostic.Create(CodeFirstClassReadOnlyPropertyUsageRule, node.GetLocation(), memberName.Identifier.ValueText, rootQueryableType.Name);
+                    var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstClassReadOnlyPropertyUsageRule : Error_CodeFirstClassReadOnlyPropertyUsageRule, node.GetLocation(), memberName.Identifier.ValueText, rootQueryableType.Name);
                     context.ReportDiagnostic(diagnostic);
                 }
             }
@@ -202,7 +232,7 @@ namespace EFLinqAnalyzer
                     bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType);
                     if (!bValid)
                     {
-                        var diagnostic = Diagnostic.Create(CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
+                        var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule : Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
                         context.ReportDiagnostic(diagnostic);
                     }
                 }
@@ -211,7 +241,7 @@ namespace EFLinqAnalyzer
                     if (!CanonicalMethodNames.IsKnownMethod(identExpr))
                     {
                         methodName = identExpr.Identifier.ValueText;
-                        var diagnostic = Diagnostic.Create(CodeFirstUnsupportedStaticMethodInLinqExpressionRule, node.GetLocation(), methodName);
+                        var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule : Error_CodeFirstUnsupportedStaticMethodInLinqExpressionRule, node.GetLocation(), methodName);
                         context.ReportDiagnostic(diagnostic);
                     }
                 }
@@ -302,11 +332,8 @@ namespace EFLinqAnalyzer
                                                     }
                                                     else if (nts.Name == "IQueryable")
                                                     {
-                                                        var clsInfo = CheckIfAssignedFromDbSetProperty(lts, context);
-                                                        if (clsInfo != null)
-                                                        {
-                                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
-                                                        }
+                                                        var clsInfo = efContext.BuildEFClassInfo(typeArg);
+                                                        ValidateLinqToEntitiesExpression(lambda, clsInfo, context, treatAsWarning: true);
                                                     }
                                                 }
                                             }
@@ -353,12 +380,6 @@ namespace EFLinqAnalyzer
                     }
                 }
             }
-        }
-        
-        private static EFCodeFirstClassInfo CheckIfAssignedFromDbSetProperty(ILocalSymbol lts, SyntaxNodeAnalysisContext context)
-        {
-
-            return null;
         }
     }
 }

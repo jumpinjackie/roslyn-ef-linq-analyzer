@@ -195,5 +195,86 @@ namespace EFLinqAnalyzer {
                 return ResourceManager.GetString("EFLINQ004_TITLE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read-Only properties are not translatable to SQL in LINQ to Entities and will cause a NotSupportedException to be thrown by a EF LINQ provider. This is only a warning as the analyzer cannot determine if this LINQ expression is made against an actual DbSet&lt;T&gt;.
+        /// </summary>
+        internal static string EFLINQ005_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ005_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read-Only property &apos;{0}&apos; of type &apos;{1}&apos; potentially used in LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ005_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ005_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read-Only property potentially used within LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ005_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ005_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only a specific subset of methods are allowed within a LINQ to Entities expression. This is only a warning as the analyzer cannot determine if this LINQ expression is made against an actual DbSet&lt;T&gt;.
+        /// </summary>
+        internal static string EFLINQ006_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ006_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported static method &apos;{0}&apos; potentially being used within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ006_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ006_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Potential invalid static method call within LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ006_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ006_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only a specific subset of methods are allowed within a LINQ to Entities expression. This is only a warning as the analyzer cannot determine if this LINQ expression is made against an actual DbSet&lt;T&gt;.
+        /// </summary>
+        internal static string EFLINQ007_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ007_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported method &apos;{0}&apos; potentially being used within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ007_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ007_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Potential unsupported method call on instance within LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ007_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ007_TITLE", resourceCulture);
+            }
+        }
     }
 }

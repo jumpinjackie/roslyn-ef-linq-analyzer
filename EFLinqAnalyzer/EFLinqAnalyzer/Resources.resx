@@ -165,4 +165,31 @@
   <data name="EFLINQ004_TITLE" xml:space="preserve">
     <value>Invalid method call on instance within LINQ to Entities expression</value>
   </data>
+  <data name="EFLINQ005_DESC" xml:space="preserve">
+    <value>Read-Only properties are not translatable to SQL in LINQ to Entities and will cause a NotSupportedException to be thrown by a EF LINQ provider. This is only a warning as the analyzer cannot determine if this LINQ expression is made against an actual DbSet&lt;T&gt;</value>
+  </data>
+  <data name="EFLINQ005_MSGFORMAT" xml:space="preserve">
+    <value>Read-Only property '{0}' of type '{1}' potentially used in LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ005_TITLE" xml:space="preserve">
+    <value>Read-Only property potentially used within LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ006_DESC" xml:space="preserve">
+    <value>Only a specific subset of methods are allowed within a LINQ to Entities expression. This is only a warning as the analyzer cannot determine if this LINQ expression is made against an actual DbSet&lt;T&gt;</value>
+  </data>
+  <data name="EFLINQ006_MSGFORMAT" xml:space="preserve">
+    <value>Unsupported static method '{0}' potentially being used within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ006_TITLE" xml:space="preserve">
+    <value>Potential invalid static method call within LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ007_DESC" xml:space="preserve">
+    <value>Only a specific subset of methods are allowed within a LINQ to Entities expression. This is only a warning as the analyzer cannot determine if this LINQ expression is made against an actual DbSet&lt;T&gt;</value>
+  </data>
+  <data name="EFLINQ007_MSGFORMAT" xml:space="preserve">
+    <value>Unsupported method '{0}' potentially being used within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ007_TITLE" xml:space="preserve">
+    <value>Potential unsupported method call on instance within LINQ to Entities expression</value>
+  </data>
 </root>
