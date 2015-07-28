@@ -963,6 +963,289 @@ namespace EFLinqAnalyzer.Test
         }
 
         [TestMethod]
+        public void EFLINQ004_LinqWhere()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+        }
+
+        class Program
+        {
+            public static void Main(string [] args)
+            {
+                using (var context = new MyContext())
+                {
+                    var items = context.Things.Where(t => t.Foo.CompareTo(t.Bar) == 0);
+                }
+            }
+        }
+    }";
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ004",
+                    Message = String.Format("Method '{0}' cannot be used within a LINQ to Entities expression", "CompareTo"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 29, 59)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void EFLINQ004_LinqSelect()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+        }
+
+        class Program
+        {
+            public static void Main(string [] args)
+            {
+                using (var context = new MyContext())
+                {
+                    var items = context.Things.Select(t => new { t.Foo, t.Bar, Clone = t.Foo.Clone() });
+                }
+            }
+        }
+    }";
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ004",
+                    Message = String.Format("Method '{0}' cannot be used within a LINQ to Entities expression", "Clone"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 29, 88)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void EFLINQ005_LinqWhere()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+
+            public string FooBar
+            {
+                get { return this.Foo + "" "" + this.Bar; }
+            }
+
+            public string FooBarExpr => this.Foo + "" "" + this.Bar;
+        }
+
+        class Program
+        {
+            static IQueryable<Thing> GetThings(MyContext context)
+            {
+                return context.Things;
+            }
+
+            public static void Main(string [] args)
+            {
+                using (var context = new MyContext())
+                {
+                    IQueryable<Thing> things = GetThings(context);
+                    var items = things.Where(t => t.FooBar == ""Some Value"");
+                    var items2 = things.Where(t => t.FooBarExpr == ""Some other value"");
+                }
+            }
+        }
+    }";
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBar", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 22, 13)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBarExpr", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 27, 13)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ005",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' potentially used in LINQ to Entities expression", "FooBar", "Thing"),
+                    Severity = DiagnosticSeverity.Warning,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 42, 51)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ005",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' potentially used in LINQ to Entities expression", "FooBarExpr", "Thing"),
+                    Severity = DiagnosticSeverity.Warning,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 43, 52)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void EFLINQ005_LinqSelect()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+
+            public string FooBar
+            {
+                get { return this.Foo + "" "" + this.Bar; }
+            }
+
+            public string FooBarExpr => this.Foo + "" "" + this.Bar;
+        }
+
+        class Program
+        {
+            static IQueryable<Thing> GetThings(MyContext context)
+            {
+                return context.Things;
+            }
+
+            public static void Main(string [] args)
+            {
+                using (var context = new MyContext())
+                {
+                    IQueryable<Thing> things = GetThings(context);
+                    var items = things.Select(t => new { t.Foo, t.Bar, t.FooBar, t.FooBarExpr });
+                }
+            }
+        }
+    }";
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBar", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 22, 13)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBarExpr", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 27, 13)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ005",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' potentially used in LINQ to Entities expression", "FooBar", "Thing"),
+                    Severity = DiagnosticSeverity.Warning,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 42, 72)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ005",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' potentially used in LINQ to Entities expression", "FooBarExpr", "Thing"),
+                    Severity = DiagnosticSeverity.Warning,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 42, 82)
+                            }
+                });
+        }
+
+        [TestMethod]
         public void EFLINQ006_LinqSelect_IndirectDbSetFromMethodThruIQueryableFacade()
         {
             var test = @"

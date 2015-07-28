@@ -42,12 +42,12 @@ namespace EFLinqAnalyzer
 
         private static DiagnosticDescriptor Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
             id: "EFLINQ004",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ003_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ003_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ004_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ004_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
             category: "Entity Framework Gotchas",
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ003_DESC), Resources.ResourceManager, typeof(Resources)));
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ004_DESC), Resources.ResourceManager, typeof(Resources)));
 
         private static DiagnosticDescriptor Warning_CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
             id: "EFLINQ005",
