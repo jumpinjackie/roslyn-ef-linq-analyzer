@@ -718,6 +718,185 @@ namespace EFLinqAnalyzer.Test
             VerifyCSharpDiagnostic(test);
         }
 
+        [TestMethod]
+        public void EFLINQ003_LinqSelect_IndirectDbSet()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+        }
+
+        class Program
+        {
+            static bool FooIsBar(string foo, string bar)
+            {
+                return foo == bar;
+            }
+
+            public static void Main(string [] args)
+            {
+                using (var context = new MyContext())
+                {
+                    var things = context.Things;
+                    var items = things.Select(t => new { t.Foo, t.Bar, IsMatch = FooIsBar(t.Foo, t.Bar) });
+                }
+            }
+        }
+    }";
+
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ003",
+                    Message = String.Format("Static method '{0}' cannot be used within a LINQ to Entities expression", "FooIsBar"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 35, 82)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void EFLINQ003_LinqSelect_IndirectDbSetFromMethod()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+        }
+
+        class Program
+        {
+            static bool FooIsBar(string foo, string bar)
+            {
+                return foo == bar;
+            }
+
+            static DbSet<Thing> GetThings(MyContext context)
+            {
+                return context.Things;
+            }
+
+            public static void Main(string [] args)
+            {
+                using (var context = new MyContext())
+                {
+                    var things = GetThings(context);
+                    var items = things.Select(t => new { t.Foo, t.Bar, IsMatch = FooIsBar(t.Foo, t.Bar) });
+                }
+            }
+        }
+    }";
+
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ003",
+                    Message = String.Format("Static method '{0}' cannot be used within a LINQ to Entities expression", "FooIsBar"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 40, 82)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void EFLINQ003_LinqWhere_IndirectDbSetFromMethod()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+        }
+
+        public class Thing
+        {
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+        }
+
+        class Program
+        {
+            static bool FooIsBar(string foo, string bar)
+            {
+                return foo == bar;
+            }
+
+            static DbSet<Thing> GetThings(MyContext context)
+            {
+                return context.Things;
+            }
+
+            public static void Main(string [] args)
+            {
+                using (var context = new MyContext())
+                {
+                    Expression<Func<Thing, bool>> predicate = t => FooIsBar(t.Foo, t.Bar);
+                    var items = context.Things.Where(predicate);
+                }
+            }
+        }
+    }";
+
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ003",
+                    Message = String.Format("Static method '{0}' cannot be used within a LINQ to Entities expression", "FooIsBar"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 40, 68)
+                            }
+                });
+        }
+
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return null;

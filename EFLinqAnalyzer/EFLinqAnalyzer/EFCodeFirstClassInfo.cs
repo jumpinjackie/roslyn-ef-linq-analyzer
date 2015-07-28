@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EFLinqAnalyzer
 {
-    internal class EFCodeFirstClassInfo
+    public class EFCodeFirstClassInfo
     {
         public INamedTypeSymbol ClassType { get; }
 

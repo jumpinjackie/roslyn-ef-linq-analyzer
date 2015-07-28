@@ -222,14 +222,21 @@ namespace EFLinqAnalyzer
         {
             return CanonicalMethodNames.IsKnownMethod(node, memberExpr);
         }
-
+        
         private static void AnalyzeLinqExpression(SyntaxNodeAnalysisContext context)
         {
+            var efContext = new EFUsageContext(context);
+            //If there's no known DbContext derived types in the semantic model, then there
+            //is no point continuing
+            if (efContext.DbContexts.Count == 0)
+                return;
+
             //Check if the lambda is part of an IQueryable call chain. If so, check that it only contains valid
             //EF LINQ constructs (initializers, entity members, entity navigation properties)
             var lambda = context.Node as LambdaExpressionSyntax;
             if (lambda != null)
             {
+                var lambdaAssign = lambda.Parent as EqualsValueClauseSyntax;
                 var arg = lambda.Parent as ArgumentSyntax;
                 if (arg != null) //The lambda in question is being passed as an argument
                 {
@@ -254,9 +261,10 @@ namespace EFLinqAnalyzer
                                     case "Where": //Filter
                                         {
                                             var si = context.SemanticModel.GetSymbolInfo(memberExpr.Expression);
-                                            
-                                            //Is this method called on a property?
+
+                                            var lts = si.Symbol as ILocalSymbol;
                                             var pts = si.Symbol as IPropertySymbol;
+                                            //Is this method called on a property?
                                             if (pts != null)
                                             {
                                                 var nts = pts.Type as INamedTypeSymbol;
@@ -270,28 +278,37 @@ namespace EFLinqAnalyzer
                                                         {
                                                             var typeArg = nts.TypeArguments[0];
                                                             //Let's give our method some assistance, by checking what T actually is
-                                                            var clsSymbol = context.SemanticModel
-                                                                                   .LookupNamespacesAndTypes(typeArg.Locations.First().SourceSpan.Start, null, typeArg.Name)
-                                                                                   .OfType<INamedTypeSymbol>()
-                                                                                   .FirstOrDefault();
-
-                                                            var clsSymbols = context.SemanticModel
-                                                                                    .LookupSymbols(clsSymbol.Locations.First().SourceSpan.Start, clsSymbol);
-
-                                                            //If it has potential EF LINQ minefields then do the actual check
-                                                            var clsInfo = new EFCodeFirstClassInfo(clsSymbol);
-                                                            clsInfo.AddProperties(clsSymbols.OfType<IPropertySymbol>());
+                                                            var clsInfo = efContext.BuildEFClassInfo(typeArg);
                                                             //Okay now let's see if this lambda is valid in the EF context
                                                             ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
                                                         }
                                                     }
                                                 }
                                             }
-                                            else
+                                            else if (lts != null) //The linq method was called on a local variable
                                             {
-                                                //TODO: Need to also check if the method is called on a IQueryable<T>
-                                                //that ultimately was assigned from a DbSet<T> property of a class that
-                                                //derives from DbContext
+                                                var nts = lts.Type as INamedTypeSymbol;
+                                                if (nts != null && nts.TypeArguments.Length == 1)
+                                                {
+                                                    //This is some generic type with one type argument
+                                                    var typeArg = nts.TypeArguments[0];
+                                                    if (nts.Name == "DbSet")
+                                                    {
+                                                        //TODO: Should still actually check that it is ultimately assigned
+                                                        //from a DbSet<T> property of a DbContext derived class
+
+                                                        var clsInfo = efContext.BuildEFClassInfo(typeArg);
+                                                        ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
+                                                    }
+                                                    else if (nts.Name == "IQueryable")
+                                                    {
+                                                        var clsInfo = CheckIfAssignedFromDbSetProperty(lts, context);
+                                                        if (clsInfo != null)
+                                                        {
+                                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                         break;
@@ -300,7 +317,48 @@ namespace EFLinqAnalyzer
                         }
                     }
                 }
+                else if (lambdaAssign != null) //The lambda in question is being assigned
+                {
+                    var localLambdaDecl = lambdaAssign?.Parent?.Parent?.Parent as LocalDeclarationStatementSyntax;
+                    if (localLambdaDecl != null)
+                    {
+                        var declType = localLambdaDecl?.Declaration?.Type as GenericNameSyntax;
+                        if (declType != null)
+                        {
+                            //Is Expression<T>
+                            if (declType.Identifier.ValueText == "Expression" && declType.TypeArgumentList.Arguments.Count == 1)
+                            {
+                                //The T is Func<TInput, TOutput>
+                                var exprTypeArg = declType.TypeArgumentList.Arguments[0] as GenericNameSyntax;
+                                if (exprTypeArg != null &&
+                                    exprTypeArg.Identifier.ValueText == "Func" &&
+                                    exprTypeArg.TypeArgumentList.Arguments.Count == 2)
+                                {
+                                    var inputType = exprTypeArg.TypeArgumentList.Arguments[0] as IdentifierNameSyntax;
+                                    var outputType = exprTypeArg.TypeArgumentList.Arguments[1] as PredefinedTypeSyntax;
+                                    //The TOutput in Func<TInput, TOutput> is bool
+                                    if (inputType != null && outputType != null && outputType.Keyword.ValueText == "bool")
+                                    {
+                                        var si = context.SemanticModel.GetSymbolInfo(inputType);
+                                        var ts = efContext.EntityTypes.FirstOrDefault(t => t == si.Symbol);
+                                        if (ts != null)
+                                        {
+                                            var clsInfo = efContext.BuildEFClassInfo(ts);
+                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
+        }
+        
+        private static EFCodeFirstClassInfo CheckIfAssignedFromDbSetProperty(ILocalSymbol lts, SyntaxNodeAnalysisContext context)
+        {
+
+            return null;
         }
     }
 }

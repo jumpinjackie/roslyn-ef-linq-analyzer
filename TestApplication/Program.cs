@@ -62,7 +62,8 @@ namespace TestApplication
         static void TestCase_WhereClauseWithUnsupportedMethod(SchoolContext context)
         {
             Console.WriteLine("Test case: Where clause with unsupported method");
-            foreach (var student in context.Students.Where(s => StringContains(s.FirstMidName, "A")))
+            System.Linq.Expressions.Expression<Func<Student, bool>> predicate = s => StringContains(s.FirstMidName, "A");
+            foreach (var student in context.Students.Where(predicate))
             {
                 Console.WriteLine($"\t{student.FirstMidName} {student.LastName} enrolled on {student.EnrollmentDate}");
             }
