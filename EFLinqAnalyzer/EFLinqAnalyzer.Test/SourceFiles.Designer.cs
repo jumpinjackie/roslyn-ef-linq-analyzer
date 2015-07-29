@@ -83,7 +83,7 @@ namespace EFLinqAnalyzer.Test {
         ///
         ///        public string FooBar
         ///        {
-        ///            get { return this.Foo + &quot;&quot;  [rest of string was truncated]&quot;;.
+        ///            get { return this.Foo + &quot; &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ001_ClassWithReadOnlyProperty_ReferencedInUnqualifiedDbContext {
             get {
@@ -145,7 +145,7 @@ namespace EFLinqAnalyzer.Test {
         ///
         ///        public string FooBar
         ///        {
-        ///            get { return this.Foo + &quot;&quot;  [rest of string was truncated]&quot;;.
+        ///            get { return this.Foo + &quot; &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ001_ClassWithReadOnlyPropertyAndExprBodiedMember_ReferencedInUnqualifiedDbContext {
             get {
@@ -177,7 +177,7 @@ namespace EFLinqAnalyzer.Test {
         ///
         ///        public string FooBar
         ///        {
-        ///            get { return this.Foo + &quot;&quot;  [rest of string was truncated]&quot;;.
+        ///            get { return this.Foo + &quot; &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ002_LinqSelect {
             get {
@@ -208,7 +208,7 @@ namespace EFLinqAnalyzer.Test {
         ///
         ///        public string FooBar
         ///        {
-        ///            get { return this.Foo + &quot;&quot;  [rest of string was truncated]&quot;;.
+        ///            get { return this.Foo + &quot; &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ002_LinqWhere {
             get {
@@ -354,6 +354,7 @@ namespace EFLinqAnalyzer.Test {
         ///using System.Threading.Tasks;
         ///using System.Diagnostics;
         ///using System.Data.Entity;
+        ///using System.Data.Entity.Spatial;
         ///
         ///namespace ConsoleApplication1
         ///{
@@ -367,7 +368,7 @@ namespace EFLinqAnalyzer.Test {
         ///        public string Foo { get; set; }
         ///        public DateTime At { get; set; }
         ///        public double ADouble { get; set; }
-        ///        public DbGeometry Geom { get [rest of string was truncated]&quot;;.
+        ///  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ003_LinqSelect_ValidMethods {
             get {
@@ -527,7 +528,7 @@ namespace EFLinqAnalyzer.Test {
         ///
         ///        public string FooBar
         ///        {
-        ///            get { return this.Foo + &quot;&quot;  [rest of string was truncated]&quot;;.
+        ///            get { return this.Foo + &quot; &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ005_LinqSelect {
             get {
@@ -558,7 +559,7 @@ namespace EFLinqAnalyzer.Test {
         ///
         ///        public string FooBar
         ///        {
-        ///            get { return this.Foo + &quot;&quot;  [rest of string was truncated]&quot;;.
+        ///            get { return this.Foo + &quot; &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ005_LinqWhere {
             get {
@@ -665,6 +666,37 @@ namespace EFLinqAnalyzer.Test {
         ///using System.Text;
         ///using System.Threading.Tasks;
         ///using System.Diagnostics;
+        ///using System.Data.Entity;
+        ///
+        ///namespace ConsoleApplication1
+        ///{
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;NotAThing&gt; NotThings { get; set; }
+        ///
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///
+        ///        public DbSet&lt;Sprocket&gt; Sprockets { get; set; }
+        ///    }
+        ///
+        ///    public class Thing
+        ///    {
+        ///        public int Id { get; set; }
+        ///        pu [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EFLINQ010_LinqWhere {
+            get {
+                return ResourceManager.GetString("EFLINQ010_LinqWhere", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///using System.Collections.Generic;
+        ///using System.Linq;
+        ///using System.Text;
+        ///using System.Threading.Tasks;
+        ///using System.Diagnostics;
         ///
         ///namespace ConsoleApplication1
         ///{
@@ -675,7 +707,7 @@ namespace EFLinqAnalyzer.Test {
         ///
         ///        public string FooBar
         ///        {
-        ///            get { return this.Foo + &quot;&quot; &quot;&quot; + this.Bar; }
+        ///            get { return this.Foo + &quot; &quot; + this.Bar; }
         ///        }
         ///    }
         ///}.
@@ -701,7 +733,7 @@ namespace EFLinqAnalyzer.Test {
         ///        public string Foo { get; set; }
         ///        public string Bar { get; set; }
         ///
-        ///        public string FooBar =&gt; this.Foo + &quot;&quot; &quot;&quot; + this.Bar; 
+        ///        public string FooBar =&gt; this.Foo + &quot; &quot; + this.Bar; 
         ///    }
         ///}.
         /// </summary>

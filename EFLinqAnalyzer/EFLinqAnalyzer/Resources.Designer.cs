@@ -62,33 +62,6 @@ namespace EFLinqAnalyzer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type names should be all uppercase..
-        /// </summary>
-        internal static string AnalyzerDescription {
-            get {
-                return ResourceManager.GetString("AnalyzerDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type name &apos;{0}&apos; contains lowercase letters.
-        /// </summary>
-        internal static string AnalyzerMessageFormat {
-            get {
-                return ResourceManager.GetString("AnalyzerMessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type name contains lowercase letters.
-        /// </summary>
-        internal static string AnalyzerTitle {
-            get {
-                return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Read-Only properties should not participate in IQueryable LINQ expressions (where clauses, joins or projections). Such properties will cause the EF LINQ provider to throw a NotSupportedException as they are not translatable to SQL.
         /// </summary>
         internal static string EFLINQ001_DESC {
@@ -301,6 +274,60 @@ namespace EFLinqAnalyzer {
         internal static string EFLINQ008_TITLE {
             get {
                 return ResourceManager.GetString("EFLINQ008_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If using a collection navigation property within a LINQ to Entities expression, be sure to make it a queryable via the AsQueryable() extension method. This is a warning because the analyzer cannot verify the source of the navigation property access.
+        /// </summary>
+        internal static string EFLINQ009_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ009_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Navigation property &apos;{0}&apos; of type &apos;{1}&apos; within a potential LINQ to Entities expression is not queryable.
+        /// </summary>
+        internal static string EFLINQ009_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ009_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection navigation property in a potential LINQ to Entities expression is not queryable.
+        /// </summary>
+        internal static string EFLINQ009_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ009_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If using a collection navigation property within a LINQ to Entities expression, be sure to make it a queryable via the AsQueryable() extension method. This is a warning because the analyzer cannot verify if the given property is truly a navigation property (due to multiple EF model classes having a property with this name) or the source of the navigation property access.
+        /// </summary>
+        internal static string EFLINQ010_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ010_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Potential navigation property &apos;{0}&apos; within a potential LINQ to Entities expression is not queryable.
+        /// </summary>
+        internal static string EFLINQ010_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ010_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Potential collection navigation property in a potential LINQ to Entities expression is not queryable.
+        /// </summary>
+        internal static string EFLINQ010_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ010_TITLE", resourceCulture);
             }
         }
     }

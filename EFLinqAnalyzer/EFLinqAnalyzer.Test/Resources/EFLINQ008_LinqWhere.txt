@@ -43,11 +43,11 @@ namespace ConsoleApplication1
             return context.Things;
         }
 
-        public static void Main(string [] args)
+        public static void Main(string[] args)
         {
             using (var context = new MyContext())
             {
-                var items = context.Things.Where(t => t.Sprockets.Where(s => s.Name == ""Ssdkfjd"");
+                var items = context.Things.Where(t => t.Sprockets.Any(s => s.Name == "Ssdkfjds"));
             }
         }
     }

@@ -20,10 +20,10 @@ namespace ConsoleApplication1
 
         public string FooBar
         {
-            get { return this.Foo + "" "" + this.Bar; }
+            get { return this.Foo + " " + this.Bar; }
         }
 
-        public string FooBarExpr => this.Foo + "" "" + this.Bar;
+        public string FooBarExpr => this.Foo + " " + this.Bar;
     }
 
     class Program
@@ -38,8 +38,8 @@ namespace ConsoleApplication1
             using (var context = new MyContext())
             {
                 IQueryable<Thing> things = GetThings(context);
-                var items = things.Where(t => t.FooBar == ""Some Value"");
-                var items2 = things.Where(t => t.FooBarExpr == ""Some other value"");
+                var items = things.Where(t => t.FooBar == "Some Value");
+                var items2 = things.Where(t => t.FooBarExpr == "Some other value");
             }
         }
     }

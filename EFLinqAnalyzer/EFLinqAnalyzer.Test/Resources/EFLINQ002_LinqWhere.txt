@@ -20,10 +20,10 @@ namespace ConsoleApplication1
 
         public string FooBar
         {
-            get { return this.Foo + "" "" + this.Bar; }
+            get { return this.Foo + " " + this.Bar; }
         }
 
-        public string FooBarExpr => this.Foo + "" "" + this.Bar;
+        public string FooBarExpr => this.Foo + " " + this.Bar;
     }
 
     class Program
@@ -32,8 +32,8 @@ namespace ConsoleApplication1
         {
             using (var context = new MyContext())
             {
-                var items = context.Things.Where(t => t.FooBar == ""Some Value"");
-                var items2 = context.Things.Where(t => t.FooBarExpr == ""Some other value"");
+                var items = context.Things.Where(t => t.FooBar == "Some Value");
+                var items2 = context.Things.Where(t => t.FooBarExpr == "Some other value");
             }
         }
     }

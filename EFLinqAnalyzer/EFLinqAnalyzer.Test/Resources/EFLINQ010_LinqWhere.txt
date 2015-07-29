@@ -10,13 +10,33 @@ namespace ConsoleApplication1
 {
     public class MyContext : DbContext
     {
+        public DbSet<NotAThing> NotThings { get; set; }
+
         public DbSet<Thing> Things { get; set; }
+
+        public DbSet<Sprocket> Sprockets { get; set; }
     }
 
     public class Thing
     {
+        public int Id { get; set; }
         public string Foo { get; set; }
         public string Bar { get; set; }
+        public virtual ICollection<Sprocket> Sprockets { get; set; }
+    }
+
+    public class Sprocket
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int? ThingId { get; set; }
+        public virtual Thing Thing { get; set; }
+    }
+
+    public class NotAThing
+    {
+        public int Id { get; set; }
+        public virtual ICollection<Sprocket> Sprockets { get; set; }
     }
 
     class Program
@@ -35,8 +55,7 @@ namespace ConsoleApplication1
         {
             using (var context = new MyContext())
             {
-                IQueryable<Thing> things = GetThings(context);
-                var items = things.Select(t => new { t.Foo, t.Bar, IsMatch = FooIsBar(t.Foo, t.Bar) });
+                var items = context.Things.Where(t => t.Sprockets.Any(s => s.Name == "Ssdkfjd"));
             }
         }
     }

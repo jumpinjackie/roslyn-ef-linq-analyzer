@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Data.Entity;
+using System.Data.Entity.Spatial;
 
 namespace ConsoleApplication1
 {
@@ -29,7 +30,7 @@ namespace ConsoleApplication1
             return foo == bar;
         }
 
-        public static void Main(string [] args)
+        public static void Main(string[] args)
         {
             using (var context = new MyContext())
             {
@@ -39,38 +40,38 @@ namespace ConsoleApplication1
                     t.ADouble,
                     t.Geom,
                     t.Geog,
-                    Math.Abs(t.ADouble),
-                    Math.Ceiling(t.ADouble),
-                    Math.Floor(t.ADouble),
-                    Math.Power(t.ADouble, 2),
-                    Math.Round(t.ADouble),
-                    Math.Truncate(t.ADouble),
-                    t.Foo.Concat(""bar""),
-                    t.Foo.Contains(""bar""),
-                    t.Foo.EndsWith(""bar""),
-                    t.Foo.IndexOf(""bar""),
+                    AbsResult = Math.Abs(t.ADouble),
+                    CeilingResult = Math.Ceiling(t.ADouble),
+                    FloorResult = Math.Floor(t.ADouble),
+                    //TODO: Valid Power() call
+                    RoundResult = Math.Round(t.ADouble),
+                    TruncateResult = Math.Truncate(t.ADouble),
+                    //TODO: valid Concat() call
+                    ContainsResult = t.Foo.Contains("bar"),
+                    EndsWithResult = t.Foo.EndsWith("bar"),
+                    IndexOfResult = t.Foo.IndexOf("bar"),
                     //TODO: valid Left() call
-                    t.Foo.Length,
+                    LengthResult = t.Foo.Length,
                     //TODO: valid LTrim() call
-                    t.Foo.Replace(""Foo"", ""Bar""),
-                    t.Foo.Reverse(),
+                    ReplaceResult = t.Foo.Replace("Foo", "Bar"),
+                    ReverseResult = t.Foo.Reverse(),
                     //TODO: valid Right() call
                     //TODO: valid RTrim() call
-                    t.Substring(0),
-                    t.Substring(0, 2),
-                    t.StartsWith(""Bar""),
-                    t.ToLower(),
-                    t.ToUpper()
-                    t.Trim(),
+                    SubstringResult = t.Foo.Substring(0),
+                    SubstringResult2 = t.Foo.Substring(0, 2),
+                    StartsWithResult = t.Foo.StartsWith("Bar"),
+                    ToLowerResult = t.Foo.ToLower(),
+                    ToUpperResult = t.Foo.ToUpper(),
+                    TrimResult = t.Foo.Trim(),
                     //TODO: valid AddNanoseconds() call
                     //TODO: valid AddMicroseconds() call
-                    t.At.AddMilliseconds(1),
-                    t.At.AddSeconds(1),
-                    t.At.AddMinutes(1),
-                    t.At.AddHours(1),
-                    t.At.AddDays(1),
-                    t.At.AddMonths(1),
-                    t.At.AddYears(1),
+                    AddMillisecondsResult = t.At.AddMilliseconds(1),
+                    AddSecondsResult = t.At.AddSeconds(1),
+                    AddMinutesResult = t.At.AddMinutes(1),
+                    AddHoursResult = t.At.AddHours(1),
+                    AddDaysResult = t.At.AddDays(1),
+                    AddMonthsResult = t.At.AddMonths(1),
+                    AddYearsResult = t.At.AddYears(1),
                     //TODO: valid CreateDateTime() call
                     //TODO: valid CreateDateTimeOffset() call
                     //TODO: valid CreateTime() call
@@ -182,7 +183,7 @@ namespace ConsoleApplication1
                     //TODO: valid StartPoint() call
                     //TODO: valid XCoordinate() call
                     //TODO: valid YCooridnate() call
-                    Guid.NewGuid()
+                    NewGuidResult = Guid.NewGuid()
                 });
             }
         }

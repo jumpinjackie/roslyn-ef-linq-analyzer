@@ -15,7 +15,7 @@ namespace EFLinqAnalyzer
 
         private Dictionary<string, IPropertySymbol> _props;
         
-        public EFCodeFirstClassInfo(INamedTypeSymbol clsType)
+        internal EFCodeFirstClassInfo(INamedTypeSymbol clsType)
         {
             this.ClassType = clsType;
             _props = new Dictionary<string, IPropertySymbol>();
@@ -30,16 +30,51 @@ namespace EFLinqAnalyzer
             }
         }
 
-        public bool HasReadOnlyProperties()
+        /// <summary>
+        /// Returns true if this class has a property of the given name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool HasProperty(string name) => _props.ContainsKey(name);
+
+        /// <summary>
+        /// Returns true if this class has any collection navigation properties
+        /// </summary>
+        /// <returns></returns>
+        public bool HasCollectionNavigationProperties() => _props.Any(p => IsCollectionNavigationProperty(p.Key));
+
+        /// <summary>
+        /// Returns true if this class has any read-only properties
+        /// </summary>
+        /// <returns></returns>
+        public bool HasReadOnlyProperties() => _props.Any(p => p.Value.SetMethod == null);
+
+        /// <summary>
+        /// Returns true if the given property name is read-only
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool IsReadOnly(string name) => _props.ContainsKey(name) && _props[name].SetMethod == null;
+
+        /// <summary>
+        /// Returns true if the given property has the NotMappedAttribute applied
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool IsUnmapped(string name)
         {
-            return _props.Any(p => p.Value.SetMethod == null);
-        }
-        
-        public bool IsReadOnly(string name)
-        {
-            return _props.ContainsKey(name) && _props[name].SetMethod == null;
+            if (_props.ContainsKey(name))
+            {
+                return _props[name].GetAttributes().Any(ad => ad.AttributeClass.Name == "NotMappedAttribute");
+            }
+            return false;
         }
 
+        /// <summary>
+        /// Returns true if the given property is a collection navigation property
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
         public bool IsCollectionNavigationProperty(string propertyName)
         {
             if (_props.ContainsKey(propertyName))
@@ -50,19 +85,8 @@ namespace EFLinqAnalyzer
             return false;
         }
 
-        private static bool IsValidCollectionType(string metadataName)
-        {
-            if (metadataName.EndsWith("`1", StringComparison.Ordinal))
-            {
-                //Are there any other valid collection types for EF navigation properties?
-                return metadataName == "ICollection`1";
-            }
-            return false;
-        }
+        private static bool IsValidCollectionType(string metadataName) => metadataName == "ICollection`1"; //Are there any other valid collection types for EF navigation properties?
 
-        public override string ToString()
-        {
-            return this.ClassType.ToString();
-        }
+        public override string ToString() => this.ClassType.ToString();
     }
 }

@@ -12,6 +12,6 @@ namespace ConsoleApplication1
         public string Foo { get; set; }
         public string Bar { get; set; }
 
-        public string FooBar => this.Foo + "" "" + this.Bar; 
+        public string FooBar => this.Foo + " " + this.Bar; 
     }
 }

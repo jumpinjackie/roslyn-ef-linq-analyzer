@@ -117,18 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AnalyzerDescription" xml:space="preserve">
-    <value>Type names should be all uppercase.</value>
-    <comment>An optional longer localizable description of the diagnostic.</comment>
-  </data>
-  <data name="AnalyzerMessageFormat" xml:space="preserve">
-    <value>Type name '{0}' contains lowercase letters</value>
-    <comment>The format-able message the diagnostic displays.</comment>
-  </data>
-  <data name="AnalyzerTitle" xml:space="preserve">
-    <value>Type name contains lowercase letters</value>
-    <comment>The title of the diagnostic.</comment>
-  </data>
   <data name="EFLINQ001_DESC" xml:space="preserve">
     <value>Read-Only properties should not participate in IQueryable LINQ expressions (where clauses, joins or projections). Such properties will cause the EF LINQ provider to throw a NotSupportedException as they are not translatable to SQL</value>
   </data>
@@ -200,5 +188,23 @@
   </data>
   <data name="EFLINQ008_TITLE" xml:space="preserve">
     <value>Collection navigation property not queryable</value>
+  </data>
+  <data name="EFLINQ009_DESC" xml:space="preserve">
+    <value>If using a collection navigation property within a LINQ to Entities expression, be sure to make it a queryable via the AsQueryable() extension method. This is a warning because the analyzer cannot verify the source of the navigation property access</value>
+  </data>
+  <data name="EFLINQ009_MSGFORMAT" xml:space="preserve">
+    <value>Navigation property '{0}' of type '{1}' within a potential LINQ to Entities expression is not queryable</value>
+  </data>
+  <data name="EFLINQ009_TITLE" xml:space="preserve">
+    <value>Collection navigation property in a potential LINQ to Entities expression is not queryable</value>
+  </data>
+  <data name="EFLINQ010_DESC" xml:space="preserve">
+    <value>If using a collection navigation property within a LINQ to Entities expression, be sure to make it a queryable via the AsQueryable() extension method. This is a warning because the analyzer cannot verify if the given property is truly a navigation property (due to multiple EF model classes having a property with this name) or the source of the navigation property access</value>
+  </data>
+  <data name="EFLINQ010_MSGFORMAT" xml:space="preserve">
+    <value>Potential navigation property '{0}' within a potential LINQ to Entities expression is not queryable</value>
+  </data>
+  <data name="EFLINQ010_TITLE" xml:space="preserve">
+    <value>Potential collection navigation property in a potential LINQ to Entities expression is not queryable</value>
   </data>
 </root>

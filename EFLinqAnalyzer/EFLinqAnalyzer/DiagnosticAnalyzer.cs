@@ -13,6 +13,9 @@ namespace EFLinqAnalyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EFLinqAnalyzerAnalyzer : DiagnosticAnalyzer
     {
+        /// <summary>
+        /// EFLINQ001: Read-Only EF code first property
+        /// </summary>
         private static DiagnosticDescriptor Info_CodeFirstClassReadOnlyRule = new DiagnosticDescriptor(
             id: "EFLINQ001",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ001_TITLE), Resources.ResourceManager, typeof(Resources)),
@@ -21,7 +24,10 @@ namespace EFLinqAnalyzer
             defaultSeverity: DiagnosticSeverity.Info,
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ001_DESC), Resources.ResourceManager, typeof(Resources)));
-        
+
+        /// <summary>
+        /// EFLINQ002: Read-Only property used within LINQ to Entities expression
+        /// </summary>
         private static DiagnosticDescriptor Error_CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
             id: "EFLINQ002",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ002_TITLE), Resources.ResourceManager, typeof(Resources)),
@@ -31,6 +37,9 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ002_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ003: Invalid static method call within LINQ to Entities expression
+        /// </summary>
         private static DiagnosticDescriptor Error_CodeFirstUnsupportedStaticMethodInLinqExpressionRule = new DiagnosticDescriptor(
             id: "EFLINQ003",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ003_TITLE), Resources.ResourceManager, typeof(Resources)),
@@ -40,6 +49,9 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ003_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ004: Invalid method call on instance within LINQ to Entities expression
+        /// </summary>
         private static DiagnosticDescriptor Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
             id: "EFLINQ004",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ004_TITLE), Resources.ResourceManager, typeof(Resources)),
@@ -49,6 +61,9 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ004_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ005: Read-Only property potentially used within LINQ to Entities expression
+        /// </summary>
         private static DiagnosticDescriptor Warning_CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
             id: "EFLINQ005",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ005_TITLE), Resources.ResourceManager, typeof(Resources)),
@@ -58,6 +73,9 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ005_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ006: Potential invalid static method call within LINQ to Entities expression
+        /// </summary>
         private static DiagnosticDescriptor Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule = new DiagnosticDescriptor(
             id: "EFLINQ006",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ006_TITLE), Resources.ResourceManager, typeof(Resources)),
@@ -67,6 +85,9 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ006_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ007: Potential unsupported method call on instance within LINQ to Entities expression
+        /// </summary>
         private static DiagnosticDescriptor Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
             id: "EFLINQ007",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ007_TITLE), Resources.ResourceManager, typeof(Resources)),
@@ -76,6 +97,9 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ007_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ008: Collection navigation property not queryable
+        /// </summary>
         private static DiagnosticDescriptor Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule = new DiagnosticDescriptor(
             id: "EFLINQ008",
             title: new LocalizableResourceString(nameof(Resources.EFLINQ008_TITLE), Resources.ResourceManager, typeof(Resources)),
@@ -84,6 +108,30 @@ namespace EFLinqAnalyzer
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ008_DESC), Resources.ResourceManager, typeof(Resources)));
+
+        /// <summary>
+        /// EFLINQ009: Collection navigation property in a potential LINQ to Entities expression is not queryable
+        /// </summary>
+        private static DiagnosticDescriptor Warning_CodeFirstCollectionNavigationPropertyInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ009",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ009_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ009_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ009_DESC), Resources.ResourceManager, typeof(Resources)));
+
+        /// <summary>
+        /// EFLINQ010: Collection navigation property in a potential LINQ to Entities expression is not queryable (ambiguous entity type)
+        /// </summary>
+        private static DiagnosticDescriptor Warning_CodeFirstCollectionNavigationPropertyForAmbiguousEntityTypeInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ010",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ010_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ010_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ010_DESC), Resources.ResourceManager, typeof(Resources)));
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
@@ -97,7 +145,9 @@ namespace EFLinqAnalyzer
                     Warning_CodeFirstClassReadOnlyPropertyUsageRule,
                     Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule,
                     Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule,
-                    Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule);
+                    Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule,
+                    Warning_CodeFirstCollectionNavigationPropertyInLinqExpressionRule,
+                    Warning_CodeFirstCollectionNavigationPropertyForAmbiguousEntityTypeInLinqExpressionRule);
             }
         }
 
@@ -228,15 +278,32 @@ namespace EFLinqAnalyzer
                             if (member != null)
                             {
                                 string memberName = member.Identifier.ValueText;
-                                var cls = efContext.GetClassForProperty(memberName);
-                                //TODO: Code fix candidate
-                                //
-                                //In such a case, inject an .AsQueryable() before the LINQ operator call
-                                //and add using System.Linq if required
-                                if (cls != null && cls.IsCollectionNavigationProperty(memberName))
+                                var applicableClasses = efContext.GetClassForProperty(memberName)
+                                                                 .Where(c => c.HasProperty(memberName));
+                                
+                                if (applicableClasses.Count() > 1)
                                 {
-                                    var diagnostic = Diagnostic.Create(Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule, member.GetLocation(), memberName, cls.Name);
+                                    //TODO: Code fix candidate
+                                    //
+                                    //In such a case, inject an .AsQueryable() before the LINQ operator call
+                                    //and add using System.Linq if required
+                                    var diagnostic = Diagnostic.Create(Warning_CodeFirstCollectionNavigationPropertyForAmbiguousEntityTypeInLinqExpressionRule, member.GetLocation(), memberName);
                                     context.ReportDiagnostic(diagnostic);
+                                }
+                                else
+                                {
+                                    var cls = applicableClasses.FirstOrDefault();
+                                    //There is only one class with this property and it is confirmed to be a collection
+                                    //navigation property
+                                    if (cls != null && cls.IsCollectionNavigationProperty(memberName))
+                                    {
+                                        //TODO: Code fix candidate
+                                        //
+                                        //In such a case, inject an .AsQueryable() before the LINQ operator call
+                                        //and add using System.Linq if required
+                                        var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstCollectionNavigationPropertyInLinqExpressionRule : Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule, member.GetLocation(), memberName, cls.Name);
+                                        context.ReportDiagnostic(diagnostic);
+                                    }
                                 }
                             }
                             //TODO: If not, check that the preceding member is IQueryable<T> and that T is a known

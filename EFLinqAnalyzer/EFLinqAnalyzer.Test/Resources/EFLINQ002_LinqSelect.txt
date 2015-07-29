@@ -20,10 +20,10 @@ namespace ConsoleApplication1
 
         public string FooBar
         {
-            get { return this.Foo + "" "" + this.Bar; }
+            get { return this.Foo + " " + this.Bar; }
         }
 
-        public string FooBarExpr => this.Foo + "" "" + this.Bar;
+        public string FooBarExpr => this.Foo + " " + this.Bar;
     }
 
     class Program

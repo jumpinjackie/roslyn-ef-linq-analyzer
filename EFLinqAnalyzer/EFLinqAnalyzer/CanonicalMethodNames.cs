@@ -274,6 +274,7 @@ namespace EFLinqAnalyzer
             public const string GroupBy = nameof(GroupBy);
             public const string Join = nameof(Join);
             public const string Aggregate = nameof(Aggregate);
+            public const string Any = nameof(Any);
         }
 
         static CanonicalMethodNames()
@@ -562,6 +563,7 @@ namespace EFLinqAnalyzer
             _methods[LinqOperators.Aggregate] = MethodInfo.Stub(LinqOperators.Aggregate);
             _methods[LinqOperators.GroupBy] = MethodInfo.Stub(LinqOperators.GroupBy);
             _methods[LinqOperators.Join] = MethodInfo.Stub(LinqOperators.Join);
+            _methods[LinqOperators.Any] = MethodInfo.Stub(LinqOperators.Any);
 
             _linqOperators = new Dictionary<string, MethodInfo>();
 
@@ -570,6 +572,7 @@ namespace EFLinqAnalyzer
             _linqOperators[LinqOperators.GroupBy] = _methods[LinqOperators.GroupBy];
             _linqOperators[LinqOperators.Join] = _methods[LinqOperators.Join];
             _linqOperators[LinqOperators.Select] = _methods[LinqOperators.Select];
+            _linqOperators[LinqOperators.Any] = _methods[LinqOperators.Any];
             #endregion
         }
 

@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace EFLinqAnalyzer
         private ReadOnlyCollection<ITypeSymbol> _entityTypeSymbols;
 
         private Dictionary<ITypeSymbol, EFCodeFirstClassInfo> _clsInfo;
-        private Dictionary<string, EFCodeFirstClassInfo> _propertiesToCls;
+        private Dictionary<string, List<EFCodeFirstClassInfo>> _propertiesToCls;
 
         public EFUsageContext(SyntaxNodeAnalysisContext context)
         {
@@ -66,7 +67,7 @@ namespace EFLinqAnalyzer
             _entityTypeSymbols = new ReadOnlyCollection<ITypeSymbol>(entityTypes.ToList());
 
             _clsInfo = new Dictionary<ITypeSymbol, EFCodeFirstClassInfo>();
-            _propertiesToCls = new Dictionary<string, EFCodeFirstClassInfo>();
+            _propertiesToCls = new Dictionary<string, List<EFCodeFirstClassInfo>>();
             foreach (var et in _entityTypeSymbols)
             {
                 var clsSymbol = _context.SemanticModel
@@ -84,7 +85,11 @@ namespace EFLinqAnalyzer
                                                                  .Start, clsSymbol);
 
                 var clsInfo = new EFCodeFirstClassInfo(clsSymbol);
-                clsInfo.AddProperties(clsSymbols.OfType<IPropertySymbol>(), (sym) => _propertiesToCls[sym.Name] = clsInfo);
+                clsInfo.AddProperties(clsSymbols.OfType<IPropertySymbol>(), (sym) => {
+                    if (!_propertiesToCls.ContainsKey(sym.Name))
+                        _propertiesToCls[sym.Name] = new List<EFCodeFirstClassInfo>();
+                    _propertiesToCls[sym.Name].Add(clsInfo);
+                });
 
                 _clsInfo[et] = clsInfo;
             }
@@ -105,9 +110,19 @@ namespace EFLinqAnalyzer
             return false;
         }
 
+        /// <summary>
+        /// Gets the EF class info for the given type symbol. Returns null if no such class found
+        /// </summary>
+        /// <param name="typeArg"></param>
+        /// <returns></returns>
         public EFCodeFirstClassInfo GetClassInfo(ITypeSymbol typeArg) => _clsInfo.ContainsKey(typeArg) ? _clsInfo[typeArg] : null;
 
-        public EFCodeFirstClassInfo GetClassForProperty(string propertyName) => _propertiesToCls.ContainsKey(propertyName) ? _propertiesToCls[propertyName] : null;
+        /// <summary>
+        /// Gets the applicable EF classes for the given property name.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        public ImmutableArray<EFCodeFirstClassInfo> GetClassForProperty(string propertyName) => _propertiesToCls.ContainsKey(propertyName) ? _propertiesToCls[propertyName].ToImmutableArray() : ImmutableArray.Create<EFCodeFirstClassInfo>();
 
         /// <summary>
         /// Gets the list of known DbContext derived type symbols from the current semantic model

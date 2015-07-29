@@ -480,6 +480,23 @@ namespace EFLinqAnalyzer.Test
             VerifyCSharpDiagnostic(test);
         }
 
+        [TestMethod]
+        public void EFLINQ010_LinqWhere()
+        {
+            var test = SourceFiles.EFLINQ010_LinqWhere;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ010",
+                    Message = String.Format("Potential navigation property '{0}' within a potential LINQ to Entities expression is not queryable", "Sprockets"),
+                    Severity = DiagnosticSeverity.Warning,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 58, 57)
+                            }
+                });
+        }
+
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return null;
