@@ -102,6 +102,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SourceFiles.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SourceFiles.resx</DependentUpon>
+    </Compile>
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />
@@ -121,6 +126,75 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SourceFiles.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SourceFiles.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NonEFClassWithReadOnlyProperty.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NonEFClassWithReadOnlyPropertyExprMember.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ001_ClassWithReadOnlyProperty_ReferencedInUnqualifiedDbContext.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ001_ClassWithReadOnlyPropertyAndExprBodiedMember_ReferencedInUnqualifiedDbContext.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ001_ClassWithReadOnlyPropertyAndExprBodiedMember_ReferencedInFullyQualifiedDbContext.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ002_LinqWhere.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ002_LinqSelect.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ003_LinqWhere.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ003_LinqSelect.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ003_LinqSelect_ValidMethods.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ003_LinqSelect_IndirectDbSet.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ003_LinqSelect_IndirectDbSetFromMethod.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ003_LinqSelect_NonDirectDbContextDescendant.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ003_LinqWhere_IndirectLambdaFromLocalVar.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ004_LinqWhere.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ004_LinqSelect.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ005_LinqWhere.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ005_LinqSelect.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ006_LinqSelect_IndirectDbSetFromMethodThruIQueryableFacade.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ008_LinqWhere.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ008_LinqWhere_LegitimateUse.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+
+namespace ConsoleApplication1
+{
+    public class MyContext : System.Data.Entity.DbContext
+    {
+        public System.Data.Entity.DbSet<Thing> Things { get; set; }
+    }
+
+    public class Thing
+    {
+        public string Foo { get; set; }
+        public string Bar { get; set; }
+
+        public string FooBar
+        {
+            get { return this.Foo + "" "" + this.Bar; }
+        }
+
+        public string FooBarExpr => this.Foo + "" "" + this.Bar;
+    }
+}

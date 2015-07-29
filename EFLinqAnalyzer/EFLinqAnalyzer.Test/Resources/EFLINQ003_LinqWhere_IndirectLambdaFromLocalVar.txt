@@ -1,0 +1,44 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Data.Entity;
+
+namespace ConsoleApplication1
+{
+    public class MyContext : DbContext
+    {
+        public DbSet<Thing> Things { get; set; }
+    }
+
+    public class Thing
+    {
+        public string Foo { get; set; }
+        public string Bar { get; set; }
+    }
+
+    class Program
+    {
+        static bool FooIsBar(string foo, string bar)
+        {
+            return foo == bar;
+        }
+
+        static DbSet<Thing> GetThings(MyContext context)
+        {
+            return context.Things;
+        }
+
+        public static void Main(string [] args)
+        {
+            using (var context = new MyContext())
+            {
+                Expression<Func<Thing, bool>> predicate = t => FooIsBar(t.Foo, t.Bar);
+                var items = context.Things.Where(predicate);
+            }
+        }
+    }
+}

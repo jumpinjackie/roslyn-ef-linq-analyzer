@@ -229,30 +229,32 @@ namespace EFLinqAnalyzer
                             {
                                 string memberName = member.Identifier.ValueText;
                                 var cls = efContext.GetClassForProperty(memberName);
+                                //TODO: Code fix candidate
+                                //
+                                //In such a case, inject an .AsQueryable() before the LINQ operator call
+                                //and add using System.Linq if required
                                 if (cls != null && cls.IsCollectionNavigationProperty(memberName))
                                 {
                                     var diagnostic = Diagnostic.Create(Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule, member.GetLocation(), memberName, cls.Name);
                                     context.ReportDiagnostic(diagnostic);
                                 }
-                                else
-                                {
-
-                                }
                             }
-
-                            //Check if the member being invoked on is a preceded by an AsQueryable() call
-
-                            //If not, check that the preceding member is IQueryable<T> and that T is a known
+                            //TODO: If not, check that the preceding member is IQueryable<T> and that T is a known
                             //entity type
                         }
                     }
                     else
                     {
-                        bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType);
-                        if (!bValid)
+                        //TODO: AsQueryable() shouldn't be a blanket exception.
+                        //We obviously should check what precedes it
+                        if (methodName != "AsQueryable")
                         {
-                            var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule : Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
-                            context.ReportDiagnostic(diagnostic);
+                            bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType);
+                            if (!bValid)
+                            {
+                                var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule : Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
+                                context.ReportDiagnostic(diagnostic);
+                            }
                         }
                     }
                 }

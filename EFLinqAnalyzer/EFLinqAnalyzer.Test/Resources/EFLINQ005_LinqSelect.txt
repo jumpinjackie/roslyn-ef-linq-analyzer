@@ -1,0 +1,45 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Data.Entity;
+
+namespace ConsoleApplication1
+{
+    public class MyContext : DbContext
+    {
+        public DbSet<Thing> Things { get; set; }
+    }
+
+    public class Thing
+    {
+        public string Foo { get; set; }
+        public string Bar { get; set; }
+
+        public string FooBar
+        {
+            get { return this.Foo + "" "" + this.Bar; }
+        }
+
+        public string FooBarExpr => this.Foo + "" "" + this.Bar;
+    }
+
+    class Program
+    {
+        static IQueryable<Thing> GetThings(MyContext context)
+        {
+            return context.Things;
+        }
+
+        public static void Main(string [] args)
+        {
+            using (var context = new MyContext())
+            {
+                IQueryable<Thing> things = GetThings(context);
+                var items = things.Select(t => new { t.Foo, t.Bar, t.FooBar, t.FooBarExpr });
+            }
+        }
+    }
+}

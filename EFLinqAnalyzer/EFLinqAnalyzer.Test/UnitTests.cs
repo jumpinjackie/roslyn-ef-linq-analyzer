@@ -24,27 +24,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void NonEFClassWithReadOnlyProperty()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar
-            {
-                get { return this.Foo + "" "" + this.Bar; }
-            }
-        }
-    }";
+            var test = SourceFiles.NonEFClassWithReadOnlyProperty;
             VerifyCSharpDiagnostic(test);
         }
 
@@ -52,71 +32,14 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void NonEFClassWithReadOnlyPropertyExprMember()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
-    namespace ConsoleApplication1
-    {
-        class TypeName
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar => this.Foo + "" "" + this.Bar; 
-        }
-    }";
+            var test = SourceFiles.NonEFClassWithReadOnlyPropertyExprMember;
             VerifyCSharpDiagnostic(test);
-            /*
-            var expected = new DiagnosticResult
-            {
-                Id = "EFLINQ001",
-                Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBar", "TypeName"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 16, 27)
-                        }
-            };
-
-            VerifyCSharpDiagnostic(test, expected);
-            */
         }
 
         [TestMethod]
         public void EFLINQ001_ClassWithReadOnlyProperty_ReferencedInUnqualifiedDbContext()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar
-            {
-                get { return this.Foo + "" "" + this.Bar; }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ001_ClassWithReadOnlyProperty_ReferencedInUnqualifiedDbContext;
             var expected = new DiagnosticResult
             {
                 Id = "EFLINQ001",
@@ -124,7 +47,7 @@ namespace EFLinqAnalyzer.Test
                 Severity = DiagnosticSeverity.Info,
                 Locations =
                     new[] {
-                            new DiagnosticResultLocation("Test0.cs", 22, 13)
+                            new DiagnosticResultLocation("Test0.cs", 21, 9)
                         }
             };
 
@@ -134,35 +57,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ001_ClassWithReadOnlyPropertyAndExprBodiedMember_ReferencedInUnqualifiedDbContext()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar
-            {
-                get { return this.Foo + "" "" + this.Bar; }
-            }
-
-            public string FooBarExpr => this.Foo + "" "" + this.Bar;
-        }
-    }";
+            var test = SourceFiles.EFLINQ001_ClassWithReadOnlyPropertyAndExprBodiedMember_ReferencedInUnqualifiedDbContext;
             VerifyCSharpDiagnostic(test, 
                 new DiagnosticResult
                 {
@@ -171,7 +66,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 22, 13)
+                                new DiagnosticResultLocation("Test0.cs", 21, 9)
                             }
                 },
                 new DiagnosticResult
@@ -181,7 +76,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 27, 13)
+                                new DiagnosticResultLocation("Test0.cs", 26, 9)
                             }
                 });
         }
@@ -189,34 +84,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ001_ClassWithReadOnlyPropertyAndExprBodiedMember_ReferencedInFullyQualifiedDbContext()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : System.Data.Entity.DbContext
-        {
-            public System.Data.Entity.DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar
-            {
-                get { return this.Foo + "" "" + this.Bar; }
-            }
-
-            public string FooBarExpr => this.Foo + "" "" + this.Bar;
-        }
-    }";
+            var test = SourceFiles.EFLINQ001_ClassWithReadOnlyPropertyAndExprBodiedMember_ReferencedInFullyQualifiedDbContext;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -225,7 +93,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 21, 13)
+                                new DiagnosticResultLocation("Test0.cs", 20, 9)
                             }
                 },
                 new DiagnosticResult
@@ -235,7 +103,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 26, 13)
+                                new DiagnosticResultLocation("Test0.cs", 25, 9)
                             }
                 });
         }
@@ -243,47 +111,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ002_LinqWhere()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar
-            {
-                get { return this.Foo + "" "" + this.Bar; }
-            }
-
-            public string FooBarExpr => this.Foo + "" "" + this.Bar;
-        }
-
-        class Program
-        {
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var items = context.Things.Where(t => t.FooBar == ""Some Value"");
-                    var items2 = context.Things.Where(t => t.FooBarExpr == ""Some other value"");
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ002_LinqWhere;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -292,7 +120,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 22, 13)
+                                new DiagnosticResultLocation("Test0.cs", 21, 9)
                             }
                 },
                 new DiagnosticResult
@@ -302,7 +130,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 27, 13)
+                                new DiagnosticResultLocation("Test0.cs", 26, 9)
                             }
                 },
                 new DiagnosticResult
@@ -312,7 +140,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 36, 59)
+                                new DiagnosticResultLocation("Test0.cs", 35, 55)
                             }
                 },
                 new DiagnosticResult
@@ -322,7 +150,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 37, 60)
+                                new DiagnosticResultLocation("Test0.cs", 36, 56)
                             }
                 });
         }
@@ -330,46 +158,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ002_LinqSelect()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar
-            {
-                get { return this.Foo + "" "" + this.Bar; }
-            }
-
-            public string FooBarExpr => this.Foo + "" "" + this.Bar;
-        }
-
-        class Program
-        {
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var items = context.Things.Select(t => new { t.Foo, t.Bar, t.FooBar, t.FooBarExpr });
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ002_LinqSelect;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -378,7 +167,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 22, 13)
+                                new DiagnosticResultLocation("Test0.cs", 21, 9)
                             }
                 },
                 new DiagnosticResult
@@ -388,7 +177,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 27, 13)
+                                new DiagnosticResultLocation("Test0.cs", 26, 9)
                             }
                 },
                 new DiagnosticResult
@@ -398,7 +187,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 36, 80)
+                                new DiagnosticResultLocation("Test0.cs", 35, 76)
                             }
                 },
                 new DiagnosticResult
@@ -408,7 +197,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 36, 90)
+                                new DiagnosticResultLocation("Test0.cs", 35, 86)
                             }
                 });
         }
@@ -416,44 +205,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ003_LinqWhere()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var items = context.Things.Where(t => FooIsBar(t.Foo, t.Bar));
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ003_LinqWhere;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -462,7 +214,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 34, 59)
+                                new DiagnosticResultLocation("Test0.cs", 33, 55)
                             }
                 });
         }
@@ -470,44 +222,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ003_LinqSelect()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var items = context.Things.Select(t => new { t.Foo, t.Bar, IsMatch = FooIsBar(t.Foo, t.Bar) });
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ003_LinqSelect;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -516,7 +231,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 34, 90)
+                                new DiagnosticResultLocation("Test0.cs", 33, 86)
                             }
                 });
         }
@@ -524,243 +239,14 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ003_LinqSelect_ValidMethods()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public DateTime At { get; set; }
-            public double ADouble { get; set; }
-            public DbGeometry Geom { get; set; }
-            public DbGeography Geog { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var items = context.Things.Select(t => new {
-                        t.Foo,
-                        t.At,
-                        t.ADouble,
-                        t.Geom,
-                        t.Geog,
-                        Math.Abs(t.ADouble),
-                        Math.Ceiling(t.ADouble),
-                        Math.Floor(t.ADouble),
-                        Math.Power(t.ADouble, 2),
-                        Math.Round(t.ADouble),
-                        Math.Truncate(t.ADouble),
-                        t.Foo.Concat(""bar""),
-                        t.Foo.Contains(""bar""),
-                        t.Foo.EndsWith(""bar""),
-                        t.Foo.IndexOf(""bar""),
-                        //TODO: valid Left() call
-                        t.Foo.Length,
-                        //TODO: valid LTrim() call
-                        t.Foo.Replace(""Foo"", ""Bar""),
-                        t.Foo.Reverse(),
-                        //TODO: valid Right() call
-                        //TODO: valid RTrim() call
-                        t.Substring(0),
-                        t.Substring(0, 2),
-                        t.StartsWith(""Bar""),
-                        t.ToLower(),
-                        t.ToUpper()
-                        t.Trim(),
-                        //TODO: valid AddNanoseconds() call
-                        //TODO: valid AddMicroseconds() call
-                        t.At.AddMilliseconds(1),
-                        t.At.AddSeconds(1),
-                        t.At.AddMinutes(1),
-                        t.At.AddHours(1),
-                        t.At.AddDays(1),
-                        t.At.AddMonths(1),
-                        t.At.AddYears(1),
-                        //TODO: valid CreateDateTime() call
-                        //TODO: valid CreateDateTimeOffset() call
-                        //TODO: valid CreateTime() call
-                        //TODO: valid CurrentDateTime() call
-                        //TODO: valid CurrentDateTimeOffset() call
-                        //TODO: valid CurrentUtcDateTime() call
-                        //TODO: valid Day() call
-                        //TODO: valid DayOfYear() call
-                        //TODO: valid DiffNanoseconds() call
-                        //TODO: valid DiffMilliseconds() call
-                        //TODO: valid DiffMicroseconds() call
-                        //TODO: valid DiffSeconds() call
-                        //TODO: valid DiffMinutes() call
-                        //TODO: valid DiffHours() call
-                        //TODO: valid DiffDays() call
-                        //TODO: valid DiffMonths() call
-                        //TODO: valid DiffYears() call
-                        //TODO: valid GetTotalOffsetMinutes() call
-                        //TODO: valid Hour() call
-                        //TODO: valid Millisecond() call
-                        //TODO: valid Minute() call
-                        //TODO: valid Month() call
-                        //TODO: valid Second() call
-                        //TODO: valid TruncateTime() call
-                        //TODO: valid Year() call
-                        //TODO: valid BitWiseAnd() call
-                        //TODO: valid BitWiseNot() call
-                        //TODO: valid BitWiseOr() call
-                        //TODO: valid BitWiseXor() call
-                        //TODO: valid Area() call
-                        //TODO: valid AsBinary() call
-                        //TODO: valid AsGml() call
-                        //TODO: valid AsText() call
-                        //TODO: valid Centroid() call
-                        //TODO: valid CoordinateSystemId()
-                        //TODO: valid Distance() call
-                        //TODO: valid Elevation() call
-                        //TODO: valid EndPoint() call
-                        //TODO: valid ExteriorRing() call
-                        //TODO: valid GeographyCollectionFromBinary() call
-                        //TODO: valid GeographyCollectionFromText() call
-                        //TODO: valid GeographyFromBinary() call
-                        //TODO: valid GeographyFromGml() call
-                        //TODO: valid GeographyFromText() call
-                        //TODO: valid GeographyLineFromBinary() call
-                        //TODO: valid GeographyLineFromText() call
-                        //TODO: valid GeographyMultiLineFromBinary() call
-                        //TODO: valid GeographyMultiLineFromText() call
-                        //TODO: valid GeographyMultiPointFromBinary() call
-                        //TODO: valid GeographyMultiPointFromText() call
-                        //TODO: valid GeographyMultiPolygonFromBinary() call
-                        //TODO: valid GeographyMultiPolygonFromText() call
-                        //TODO: valid GeographyPointFromBinary() call
-                        //TODO: valid GeographyPointFromText() call
-                        //TODO: valid GeographyPolygonFromBinary() call
-                        //TODO: valid GeographyPolygonFromText() call
-                        //TODO: valid GeometryCollectionFromBinary() call
-                        //TODO: valid GeometryCollectionFromText() call
-                        //TODO: valid GeometryFromBinary() call
-                        //TODO: valid GeometryFromGml() call
-                        //TODO: valid GeometryFromText() call
-                        //TODO: valid GeometryLineFromBinary() call
-                        //TODO: valid GeometryLineFromText() call
-                        //TODO: valid GeometryMultiLineFromBinary() call
-                        //TODO: valid GeometryMultiLineFromText() call
-                        //TODO: valid GeometryMultiPointFromBinary() call
-                        //TODO: valid GeometryMultiPointFromText() call
-                        //TODO: valid GeometryMultiPolygonFromBinary() call
-                        //TODO: valid GeometryMultiPolygonFromText() call
-                        //TODO: valid GeometryPointFromBinary() call
-                        //TODO: valid GeometryPointFromText() call
-                        //TODO: valid GeometryPolygonFromBinary() call
-                        //TODO: valid GeometryPolygonFromText() call
-                        //TODO: valid InteriorRingAt() call
-                        //TODO: valid InteriorRingCount() call
-                        //TODO: valid IsClosedSpatial() call
-                        //TODO: valid IsEmptySpatial() call
-                        //TODO: valid IsRing() call
-                        //TODO: valid IsSimpleGeometry() call
-                        //TODO: valid IsValidGeometry() call
-                        //TODO: valid Latitude() call
-                        //TODO: valid Longitude() call
-                        //TODO: valid Measure() call
-                        //TODO: valid PointAt() call
-                        //TODO: valid PointCount() call
-                        //TODO: valid PointOnSurface() call
-                        //TODO: valid SpatialBoundary() call
-                        //TODO: valid SpatialBuffer() call
-                        //TODO: valid SpatialContains() call
-                        //TODO: valid SpatialConvexHull() call
-                        //TODO: valid SpatialCrosses() call
-                        //TODO: valid SpatialDifference() call
-                        //TODO: valid SpatialDimension() call
-                        //TODO: valid SpatialDisjoint() call
-                        //TODO: valid SpatialElementAt() call
-                        //TODO: valid SpatialElementCount() call
-                        //TODO: valid SpatialEnvelope() call
-                        //TODO: valid SpatialEquals() call
-                        //TODO: valid SpatialIntersection() call
-                        //TODO: valid SpatialIntersects() call
-                        //TODO: valid SpatialLength() call
-                        //TODO: valid SpatialOverlaps() call
-                        //TODO: valid SpatialRelate() call
-                        //TODO: valid SpatialSymmetricDifference() call
-                        //TODO: valid SpatialTouches() call
-                        //TODO: valid SpatialTypeName() call
-                        //TODO: valid SpatialUnion() call
-                        //TODO: valid SpatialWithin() call
-                        //TODO: valid StartPoint() call
-                        //TODO: valid XCoordinate() call
-                        //TODO: valid YCooridnate() call
-                        Guid.NewGuid()
-                    });
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ003_LinqSelect_ValidMethods;
             VerifyCSharpDiagnostic(test);
         }
 
         [TestMethod]
         public void EFLINQ003_LinqSelect_IndirectDbSet()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var things = context.Things;
-                    var items = things.Select(t => new { t.Foo, t.Bar, IsMatch = FooIsBar(t.Foo, t.Bar) });
-                }
-            }
-        }
-    }";
-
+            var test = SourceFiles.EFLINQ003_LinqSelect_IndirectDbSet;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -769,7 +255,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 35, 82)
+                                new DiagnosticResultLocation("Test0.cs", 34, 78)
                             }
                 });
         }
@@ -777,51 +263,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ003_LinqSelect_IndirectDbSetFromMethod()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            static DbSet<Thing> GetThings(MyContext context)
-            {
-                return context.Things;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var things = GetThings(context);
-                    var items = things.Select(t => new { t.Foo, t.Bar, IsMatch = FooIsBar(t.Foo, t.Bar) });
-                }
-            }
-        }
-    }";
-
+            var test = SourceFiles.EFLINQ003_LinqSelect_IndirectDbSetFromMethod;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -830,7 +272,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 40, 82)
+                                new DiagnosticResultLocation("Test0.cs", 39, 78)
                             }
                 });
         }
@@ -838,55 +280,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ003_LinqSelect_NonDirectDbContextDescendant()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyBaseContext : DbContext
-        {
-        }
-
-        public class MyContext : MyBaseContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            static DbSet<Thing> GetThings(MyContext context)
-            {
-                return context.Things;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var things = GetThings(context);
-                    var items = things.Select(t => new { t.Foo, t.Bar, IsMatch = FooIsBar(t.Foo, t.Bar) });
-                }
-            }
-        }
-    }";
-
+            var test = SourceFiles.EFLINQ003_LinqSelect_NonDirectDbContextDescendant;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -895,7 +289,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 44, 82)
+                                new DiagnosticResultLocation("Test0.cs", 43, 78)
                             }
                 });
         }
@@ -903,52 +297,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ003_LinqWhere_IndirectLambdaFromLocalVar()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            static DbSet<Thing> GetThings(MyContext context)
-            {
-                return context.Things;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    Expression<Func<Thing, bool>> predicate = t => FooIsBar(t.Foo, t.Bar);
-                    var items = context.Things.Where(predicate);
-                }
-            }
-        }
-    }";
-
+            var test = SourceFiles.EFLINQ003_LinqWhere_IndirectLambdaFromLocalVar;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -957,7 +306,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 40, 68)
+                                new DiagnosticResultLocation("Test0.cs", 39, 64)
                             }
                 });
         }
@@ -965,39 +314,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ004_LinqWhere()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var items = context.Things.Where(t => t.Foo.CompareTo(t.Bar) == 0);
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ004_LinqWhere;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -1006,7 +323,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 29, 59)
+                                new DiagnosticResultLocation("Test0.cs", 28, 55)
                             }
                 });
         }
@@ -1014,39 +331,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ004_LinqSelect()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var items = context.Things.Select(t => new { t.Foo, t.Bar, Clone = t.Foo.Clone() });
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ004_LinqSelect;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -1055,7 +340,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 29, 88)
+                                new DiagnosticResultLocation("Test0.cs", 28, 84)
                             }
                 });
         }
@@ -1063,53 +348,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ005_LinqWhere()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar
-            {
-                get { return this.Foo + "" "" + this.Bar; }
-            }
-
-            public string FooBarExpr => this.Foo + "" "" + this.Bar;
-        }
-
-        class Program
-        {
-            static IQueryable<Thing> GetThings(MyContext context)
-            {
-                return context.Things;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    IQueryable<Thing> things = GetThings(context);
-                    var items = things.Where(t => t.FooBar == ""Some Value"");
-                    var items2 = things.Where(t => t.FooBarExpr == ""Some other value"");
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ005_LinqWhere;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -1118,7 +357,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 22, 13)
+                                new DiagnosticResultLocation("Test0.cs", 21, 9)
                             }
                 },
                 new DiagnosticResult
@@ -1128,7 +367,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 27, 13)
+                                new DiagnosticResultLocation("Test0.cs", 26, 9)
                             }
                 },
                 new DiagnosticResult
@@ -1138,7 +377,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 42, 51)
+                                new DiagnosticResultLocation("Test0.cs", 41, 47)
                             }
                 },
                 new DiagnosticResult
@@ -1148,7 +387,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 43, 52)
+                                new DiagnosticResultLocation("Test0.cs", 42, 48)
                             }
                 });
         }
@@ -1156,52 +395,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ005_LinqSelect()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-
-            public string FooBar
-            {
-                get { return this.Foo + "" "" + this.Bar; }
-            }
-
-            public string FooBarExpr => this.Foo + "" "" + this.Bar;
-        }
-
-        class Program
-        {
-            static IQueryable<Thing> GetThings(MyContext context)
-            {
-                return context.Things;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    IQueryable<Thing> things = GetThings(context);
-                    var items = things.Select(t => new { t.Foo, t.Bar, t.FooBar, t.FooBarExpr });
-                }
-            }
-        }
-    }";
+            var test = SourceFiles.EFLINQ005_LinqSelect;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -1210,7 +404,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 22, 13)
+                                new DiagnosticResultLocation("Test0.cs", 21, 9)
                             }
                 },
                 new DiagnosticResult
@@ -1220,7 +414,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 27, 13)
+                                new DiagnosticResultLocation("Test0.cs", 26, 9)
                             }
                 },
                 new DiagnosticResult
@@ -1230,7 +424,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 42, 72)
+                                new DiagnosticResultLocation("Test0.cs", 41, 68)
                             }
                 },
                 new DiagnosticResult
@@ -1240,7 +434,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 42, 82)
+                                new DiagnosticResultLocation("Test0.cs", 41, 78)
                             }
                 });
         }
@@ -1248,51 +442,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ006_LinqSelect_IndirectDbSetFromMethodThruIQueryableFacade()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-        }
-
-        public class Thing
-        {
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            static IQueryable<Thing> GetThings(MyContext context)
-            {
-                return context.Things;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    IQueryable<Thing> things = GetThings(context);
-                    var items = things.Select(t => new { t.Foo, t.Bar, IsMatch = FooIsBar(t.Foo, t.Bar) });
-                }
-            }
-        }
-    }";
-
+            var test = SourceFiles.EFLINQ006_LinqSelect_IndirectDbSetFromMethodThruIQueryableFacade;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -1301,7 +451,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 40, 82)
+                                new DiagnosticResultLocation("Test0.cs", 39, 78)
                             }
                 });
         }
@@ -1309,62 +459,7 @@ namespace EFLinqAnalyzer.Test
         [TestMethod]
         public void EFLINQ008_LinqWhere()
         {
-            var test = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
-    using System.Data.Entity;
-
-    namespace ConsoleApplication1
-    {
-        public class MyContext : DbContext
-        {
-            public DbSet<Thing> Things { get; set; }
-
-            public DbSet<Sprocket> Sprockets { get; set; }
-        }
-
-        public class Thing
-        {
-            public int Id { get; set; }
-            public string Foo { get; set; }
-            public string Bar { get; set; }
-            public virtual ICollection<Sprocket> Sprockets { get; set; }
-        }
-
-        public class Sprocket
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public int? ThingId { get; set; }
-            public virtual Thing Thing { get; set; }
-        }
-
-        class Program
-        {
-            static bool FooIsBar(string foo, string bar)
-            {
-                return foo == bar;
-            }
-
-            static IQueryable<Thing> GetThings(MyContext context)
-            {
-                return context.Things;
-            }
-
-            public static void Main(string [] args)
-            {
-                using (var context = new MyContext())
-                {
-                    var items = context.Things.Where(t => t.Sprockets.Where(s => s.Name == ""Ssdkfjd"");
-                }
-            }
-        }
-    }";
-
+            var test = SourceFiles.EFLINQ008_LinqWhere;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
@@ -1373,9 +468,16 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 51, 61)
+                                new DiagnosticResultLocation("Test0.cs", 50, 57)
                             }
                 });
+        }
+
+        [TestMethod]
+        public void EFLINQ008_LinqWhere_LegitimateUse()
+        {
+            var test = SourceFiles.EFLINQ008_LinqWhere_LegitimateUse;
+            VerifyCSharpDiagnostic(test);
         }
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
