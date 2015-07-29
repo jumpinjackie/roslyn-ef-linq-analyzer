@@ -1369,11 +1369,11 @@ namespace EFLinqAnalyzer.Test
                 new DiagnosticResult
                 {
                     Id = "EFLINQ008",
-                    Message = String.Format("Unsupported static method '{0}' potentially being used within a LINQ to Entities expression", "FooIsBar"),
+                    Message = String.Format("Navigation property '{0}' of type '{1}' within LINQ to Entities expression is not queryable", "Sprockets", "Thing"),
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 40, 82)
+                                new DiagnosticResultLocation("Test0.cs", 51, 61)
                             }
                 });
         }

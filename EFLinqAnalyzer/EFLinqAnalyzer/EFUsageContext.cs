@@ -20,56 +20,94 @@ namespace EFLinqAnalyzer
         private ReadOnlyCollection<INamedTypeSymbol> _dbContextSymbols;
         private ReadOnlyCollection<ITypeSymbol> _entityTypeSymbols;
 
+        private Dictionary<ITypeSymbol, EFCodeFirstClassInfo> _clsInfo;
+        private Dictionary<string, EFCodeFirstClassInfo> _propertiesToCls;
+
         public EFUsageContext(SyntaxNodeAnalysisContext context)
         {
             _context = context;
-            var symbols = context.SemanticModel
-                                 .LookupSymbols(context.Node
-                                                       .GetLocation()
-                                                       .SourceSpan
-                                                       .Start)
-                                 .OfType<INamedTypeSymbol>()
-                                 .Where(t => t?.BaseType?.Name == "DbContext");
+        }
+
+        /// <summary>
+        /// Builds the EF-specific view of the current semantic model
+        /// </summary>
+        /// <returns>false if no DbContext or known entity types were discovered, true otherwise</returns>
+        public bool Build()
+        {
+            var typeSymbols = _context.SemanticModel
+                                      .LookupSymbols(_context.Node
+                                                             .GetLocation()
+                                                             .SourceSpan
+                                                             .Start)
+                                      .OfType<INamedTypeSymbol>();
+
+            var symbols = typeSymbols.Where(t => TypeUltimatelyDerivesFromDbContext(t));
 
             _dbContextSymbols = new ReadOnlyCollection<INamedTypeSymbol>(symbols.ToList());
 
+            if (_dbContextSymbols.Count == 0)
+                return false;
+
             var entityTypes = _dbContextSymbols.SelectMany(dbc =>
             {
-                return _context.SemanticModel
-                               .LookupSymbols(dbc.Locations
-                                                 .First()
-                                                 .SourceSpan
-                                                 .Start, dbc)
-                               .OfType<IPropertySymbol>()
-                               .Where(t => t.Type.MetadataName == "DbSet`1");
+                var dbSetProps = _context.SemanticModel
+                                         .LookupSymbols(dbc.Locations
+                                                           .First()
+                                                           .SourceSpan
+                                                           .Start, dbc)
+                                         .OfType<IPropertySymbol>()
+                                         .Where(t => t.Type.MetadataName == "DbSet`1");
+                return dbSetProps;
             })
             .Select(t => t.Type as INamedTypeSymbol)
             .Where(t => t != null)
             .Select(t => t.TypeArguments.First());
 
             _entityTypeSymbols = new ReadOnlyCollection<ITypeSymbol>(entityTypes.ToList());
+
+            _clsInfo = new Dictionary<ITypeSymbol, EFCodeFirstClassInfo>();
+            _propertiesToCls = new Dictionary<string, EFCodeFirstClassInfo>();
+            foreach (var et in _entityTypeSymbols)
+            {
+                var clsSymbol = _context.SemanticModel
+                                        .LookupNamespacesAndTypes(et.Locations
+                                                                    .First()
+                                                                    .SourceSpan
+                                                                    .Start, null, et.Name)
+                                        .OfType<INamedTypeSymbol>()
+                                        .FirstOrDefault();
+
+                var clsSymbols = _context.SemanticModel
+                                         .LookupSymbols(clsSymbol.Locations
+                                                                 .First()
+                                                                 .SourceSpan
+                                                                 .Start, clsSymbol);
+
+                var clsInfo = new EFCodeFirstClassInfo(clsSymbol);
+                clsInfo.AddProperties(clsSymbols.OfType<IPropertySymbol>(), (sym) => _propertiesToCls[sym.Name] = clsInfo);
+
+                _clsInfo[et] = clsInfo;
+            }
+            return true;
         }
 
-        public EFCodeFirstClassInfo BuildEFClassInfo(ITypeSymbol typeArg)
+        private static bool TypeUltimatelyDerivesFromDbContext(INamedTypeSymbol type)
         {
-            var clsSymbol = _context.SemanticModel
-                                    .LookupNamespacesAndTypes(typeArg.Locations
-                                                                     .First()
-                                                                     .SourceSpan
-                                                                     .Start, null, typeArg.Name)
-                                    .OfType<INamedTypeSymbol>()
-                                    .FirstOrDefault();
+            //Walk up the inheritance chain until we encounter DbContext or null (ie. Direct subclass of System.Object)
+            var bt = type.BaseType;
+            while (bt != null)
+            {
+                if (bt.Name == "DbContext")
+                    return true;
 
-            var clsSymbols = _context.SemanticModel
-                                     .LookupSymbols(clsSymbol.Locations
-                                                             .First()
-                                                             .SourceSpan
-                                                             .Start, clsSymbol);
-
-            var clsInfo = new EFCodeFirstClassInfo(clsSymbol);
-            clsInfo.AddProperties(clsSymbols.OfType<IPropertySymbol>());
-            return clsInfo;
+                bt = bt.BaseType;
+            }
+            return false;
         }
+
+        public EFCodeFirstClassInfo GetClassInfo(ITypeSymbol typeArg) => _clsInfo.ContainsKey(typeArg) ? _clsInfo[typeArg] : null;
+
+        public EFCodeFirstClassInfo GetClassForProperty(string propertyName) => _propertiesToCls.ContainsKey(propertyName) ? _propertiesToCls[propertyName] : null;
 
         /// <summary>
         /// Gets the list of known DbContext derived type symbols from the current semantic model

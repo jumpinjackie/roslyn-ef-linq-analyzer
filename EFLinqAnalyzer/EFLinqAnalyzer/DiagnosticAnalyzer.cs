@@ -176,7 +176,7 @@ namespace EFLinqAnalyzer
             return false;
         }
 
-        static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, bool treatAsWarning = false)
+        static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, EFUsageContext efContext, bool treatAsWarning = false)
         {
             var accessNodes = lambda.DescendantNodes()
                                     .OfType<MemberAccessExpressionSyntax>();
@@ -217,13 +217,34 @@ namespace EFLinqAnalyzer
                 if (memberExpr != null)
                 {
                     methodName = memberExpr?.Name?.Identifier.ValueText;
+
+                    //This is a LINQ operator (Where, Select, etc)
                     if (CanonicalMethodNames.IsLinqOperator(methodName))
                     {
-                        //Check if the member being invoked on is a preceded by an AsQueryable() call
+                        var expr = memberExpr.Expression as MemberAccessExpressionSyntax;
+                        if (expr != null)
+                        {
+                            var member = expr.Name as IdentifierNameSyntax;
+                            if (member != null)
+                            {
+                                string memberName = member.Identifier.ValueText;
+                                var cls = efContext.GetClassForProperty(memberName);
+                                if (cls != null && cls.IsCollectionNavigationProperty(memberName))
+                                {
+                                    var diagnostic = Diagnostic.Create(Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule, member.GetLocation(), memberName, cls.Name);
+                                    context.ReportDiagnostic(diagnostic);
+                                }
+                                else
+                                {
 
-                        //If not, check that the preceding member is IQueryable<T> and that T is a known
-                        //entity type
-                        
+                                }
+                            }
+
+                            //Check if the member being invoked on is a preceded by an AsQueryable() call
+
+                            //If not, check that the preceding member is IQueryable<T> and that T is a known
+                            //entity type
+                        }
                     }
                     else
                     {
@@ -255,9 +276,9 @@ namespace EFLinqAnalyzer
         private static void AnalyzeLinqExpression(SyntaxNodeAnalysisContext context)
         {
             var efContext = new EFUsageContext(context);
-            //If there's no known DbContext derived types in the semantic model, then there
-            //is no point continuing
-            if (efContext.DbContexts.Count == 0)
+            
+            //Found nothing, don't bother continuing
+            if (!efContext.Build())
                 return;
 
             //Check if the lambda is part of an IQueryable call chain. If so, check that it only contains valid
@@ -307,9 +328,12 @@ namespace EFLinqAnalyzer
                                                         {
                                                             var typeArg = nts.TypeArguments[0];
                                                             //Let's give our method some assistance, by checking what T actually is
-                                                            var clsInfo = efContext.BuildEFClassInfo(typeArg);
-                                                            //Okay now let's see if this lambda is valid in the EF context
-                                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
+                                                            var clsInfo = efContext.GetClassInfo(typeArg);
+                                                            if (clsInfo != null)
+                                                            {
+                                                                //Okay now let's see if this lambda is valid in the EF context
+                                                                ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -326,13 +350,19 @@ namespace EFLinqAnalyzer
                                                         //TODO: Should still actually check that it is ultimately assigned
                                                         //from a DbSet<T> property of a DbContext derived class
 
-                                                        var clsInfo = efContext.BuildEFClassInfo(typeArg);
-                                                        ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
+                                                        var clsInfo = efContext.GetClassInfo(typeArg);
+                                                        if (clsInfo != null)
+                                                        {
+                                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
+                                                        }
                                                     }
                                                     else if (nts.MetadataName == "IQueryable`1")
                                                     {
-                                                        var clsInfo = efContext.BuildEFClassInfo(typeArg);
-                                                        ValidateLinqToEntitiesExpression(lambda, clsInfo, context, treatAsWarning: true);
+                                                        var clsInfo = efContext.GetClassInfo(typeArg);
+                                                        if (clsInfo != null)
+                                                        {
+                                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning: true);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -369,8 +399,11 @@ namespace EFLinqAnalyzer
                                         var ts = efContext.EntityTypes.FirstOrDefault(t => t == si.Symbol);
                                         if (ts != null)
                                         {
-                                            var clsInfo = efContext.BuildEFClassInfo(ts);
-                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context);
+                                            var clsInfo = efContext.GetClassInfo(ts);
+                                            if (clsInfo != null)
+                                            {
+                                                ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
+                                            }
                                         }
                                     }
                                 }
