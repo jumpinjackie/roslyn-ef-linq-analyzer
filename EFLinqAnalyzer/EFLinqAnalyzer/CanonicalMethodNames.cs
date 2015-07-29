@@ -267,6 +267,15 @@ namespace EFLinqAnalyzer
         public const string NewGuid = nameof(NewGuid);
         #endregion
 
+        public static class LinqOperators
+        {
+            public const string Where = nameof(Where);
+            public const string Select = nameof(Select);
+            public const string GroupBy = nameof(GroupBy);
+            public const string Join = nameof(Join);
+            public const string Aggregate = nameof(Aggregate);
+        }
+
         static CanonicalMethodNames()
         {
             _methods = new Dictionary<string, MethodInfo>();
@@ -546,6 +555,29 @@ namespace EFLinqAnalyzer
             #region Other
             _methods[NewGuid] = MethodInfo.Stub(NewGuid);
             #endregion
+
+            #region LINQ operators
+            _methods[LinqOperators.Where] = MethodInfo.Stub(LinqOperators.Where);
+            _methods[LinqOperators.Select] = MethodInfo.Stub(LinqOperators.Select);
+            _methods[LinqOperators.Aggregate] = MethodInfo.Stub(LinqOperators.Aggregate);
+            _methods[LinqOperators.GroupBy] = MethodInfo.Stub(LinqOperators.GroupBy);
+            _methods[LinqOperators.Join] = MethodInfo.Stub(LinqOperators.Join);
+
+            _linqOperators = new Dictionary<string, MethodInfo>();
+
+            _linqOperators[LinqOperators.Where] = _methods[LinqOperators.Where];
+            _linqOperators[LinqOperators.Aggregate] = _methods[LinqOperators.Aggregate];
+            _linqOperators[LinqOperators.GroupBy] = _methods[LinqOperators.GroupBy];
+            _linqOperators[LinqOperators.Join] = _methods[LinqOperators.Join];
+            _linqOperators[LinqOperators.Select] = _methods[LinqOperators.Select];
+            #endregion
+        }
+
+        private static Dictionary<string, MethodInfo> _linqOperators;
+
+        internal static bool IsLinqOperator(string methodName)
+        {
+            return _linqOperators.ContainsKey(methodName);
         }
 
         internal static bool IsKnownMethod(IdentifierNameSyntax identExpr)

@@ -1306,6 +1306,78 @@ namespace EFLinqAnalyzer.Test
                 });
         }
 
+        [TestMethod]
+        public void EFLINQ008_LinqWhere()
+        {
+            var test = @"
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Diagnostics;
+    using System.Data.Entity;
+
+    namespace ConsoleApplication1
+    {
+        public class MyContext : DbContext
+        {
+            public DbSet<Thing> Things { get; set; }
+
+            public DbSet<Sprocket> Sprockets { get; set; }
+        }
+
+        public class Thing
+        {
+            public int Id { get; set; }
+            public string Foo { get; set; }
+            public string Bar { get; set; }
+            public virtual ICollection<Sprocket> Sprockets { get; set; }
+        }
+
+        public class Sprocket
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public int? ThingId { get; set; }
+            public virtual Thing Thing { get; set; }
+        }
+
+        class Program
+        {
+            static bool FooIsBar(string foo, string bar)
+            {
+                return foo == bar;
+            }
+
+            static IQueryable<Thing> GetThings(MyContext context)
+            {
+                return context.Things;
+            }
+
+            public static void Main(string [] args)
+            {
+                using (var context = new MyContext())
+                {
+                    var items = context.Things.Where(t => t.Sprockets.Where(s => s.Name == ""Ssdkfjd"");
+                }
+            }
+        }
+    }";
+
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ008",
+                    Message = String.Format("Unsupported static method '{0}' potentially being used within a LINQ to Entities expression", "FooIsBar"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 40, 82)
+                            }
+                });
+        }
+
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return null;

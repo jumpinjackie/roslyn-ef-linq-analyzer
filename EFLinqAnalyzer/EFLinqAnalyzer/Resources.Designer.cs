@@ -276,5 +276,32 @@ namespace EFLinqAnalyzer {
                 return ResourceManager.GetString("EFLINQ007_TITLE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If using a collection navigation property within a LINQ to Entities expression, be sure to make it a queryable via the AsQueryable() extension method.
+        /// </summary>
+        internal static string EFLINQ008_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ008_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Navigation property &apos;{0}&apos; of type &apos;{1}&apos; within LINQ to Entities expression is not queryable.
+        /// </summary>
+        internal static string EFLINQ008_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ008_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection navigation property not queryable.
+        /// </summary>
+        internal static string EFLINQ008_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ008_TITLE", resourceCulture);
+            }
+        }
     }
 }

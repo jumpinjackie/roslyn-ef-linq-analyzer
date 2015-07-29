@@ -192,4 +192,13 @@
   <data name="EFLINQ007_TITLE" xml:space="preserve">
     <value>Potential unsupported method call on instance within LINQ to Entities expression</value>
   </data>
+  <data name="EFLINQ008_DESC" xml:space="preserve">
+    <value>If using a collection navigation property within a LINQ to Entities expression, be sure to make it a queryable via the AsQueryable() extension method</value>
+  </data>
+  <data name="EFLINQ008_MSGFORMAT" xml:space="preserve">
+    <value>Navigation property '{0}' of type '{1}' within LINQ to Entities expression is not queryable</value>
+  </data>
+  <data name="EFLINQ008_TITLE" xml:space="preserve">
+    <value>Collection navigation property not queryable</value>
+  </data>
 </root>

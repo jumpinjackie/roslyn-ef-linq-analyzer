@@ -76,6 +76,15 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ007_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        private static DiagnosticDescriptor Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ008",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ008_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ008_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ008_DESC), Resources.ResourceManager, typeof(Resources)));
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
@@ -87,7 +96,8 @@ namespace EFLinqAnalyzer
                     Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule,
                     Warning_CodeFirstClassReadOnlyPropertyUsageRule,
                     Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule,
-                    Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule);
+                    Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule,
+                    Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule);
             }
         }
 
@@ -207,11 +217,22 @@ namespace EFLinqAnalyzer
                 if (memberExpr != null)
                 {
                     methodName = memberExpr?.Name?.Identifier.ValueText;
-                    bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType);
-                    if (!bValid)
+                    if (CanonicalMethodNames.IsLinqOperator(methodName))
                     {
-                        var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule : Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
-                        context.ReportDiagnostic(diagnostic);
+                        //Check if the member being invoked on is a preceded by an AsQueryable() call
+
+                        //If not, check that the preceding member is IQueryable<T> and that T is a known
+                        //entity type
+                        
+                    }
+                    else
+                    {
+                        bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType);
+                        if (!bValid)
+                        {
+                            var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule : Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
+                            context.ReportDiagnostic(diagnostic);
+                        }
                     }
                 }
                 else if (identExpr != null) //A non-instance (static) method call, most certainly illegal
@@ -265,8 +286,8 @@ namespace EFLinqAnalyzer
                             {
                                 switch (memberExpr?.Name?.Identifier.ValueText)
                                 {
-                                    case "Select": //Projection
-                                    case "Where": //Filter
+                                    case CanonicalMethodNames.LinqOperators.Select:
+                                    case CanonicalMethodNames.LinqOperators.Where:
                                         {
                                             var si = context.SemanticModel.GetSymbolInfo(memberExpr.Expression);
 
