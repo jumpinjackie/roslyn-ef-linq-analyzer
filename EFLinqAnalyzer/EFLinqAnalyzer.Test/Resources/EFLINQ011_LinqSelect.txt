@@ -1,0 +1,28 @@
+using System.Linq;
+using System.Data.Entity;
+
+namespace UnitTest
+{
+    public class MyContext : DbContext
+    {
+        public DbSet<Thing> Things { get; set; }
+    }
+
+    public class Thing
+    {
+        public int Id { get; set; }
+        public string Foo { get; set; }
+        public string Bar { get; set; }
+    }
+
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            using (var context = new MyContext())
+            {
+                var items = context.Things.Select(t => new { t.Id, FooBar = $"{t.Foo} {t.Bar}" });
+            }
+        }
+    }
+}

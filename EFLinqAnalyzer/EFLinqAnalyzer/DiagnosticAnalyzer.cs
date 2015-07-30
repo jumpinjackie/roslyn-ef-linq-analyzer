@@ -133,6 +133,31 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ010_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ011: Interpolated strings cannot be used within a LINQ to Entities expression
+        /// </summary>
+        private static DiagnosticDescriptor Error_UseOfInterpolatedStringInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ011",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ011_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ011_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ011_DESC), Resources.ResourceManager, typeof(Resources)));
+
+        /// <summary>
+        /// EFLINQ012: Interpolated string potentially used within a LINQ to Entities expression
+        /// </summary>
+        private static DiagnosticDescriptor Warning_UseOfInterpolatedStringInLinqExpressionRule = new DiagnosticDescriptor(
+            id: "EFLINQ012",
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ012_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ012_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: "Entity Framework Gotchas",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ012_DESC), Resources.ResourceManager, typeof(Resources)));
+
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
@@ -147,7 +172,9 @@ namespace EFLinqAnalyzer
                     Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule,
                     Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule,
                     Warning_CodeFirstCollectionNavigationPropertyInLinqExpressionRule,
-                    Warning_CodeFirstCollectionNavigationPropertyForAmbiguousEntityTypeInLinqExpressionRule);
+                    Warning_CodeFirstCollectionNavigationPropertyForAmbiguousEntityTypeInLinqExpressionRule,
+                    Error_UseOfInterpolatedStringInLinqExpressionRule,
+                    Warning_UseOfInterpolatedStringInLinqExpressionRule);
             }
         }
 
@@ -226,16 +253,37 @@ namespace EFLinqAnalyzer
             return false;
         }
 
+        /// <summary>
+        /// Validates the give lambda to see if it is a valid LINQ to Entities expression
+        /// </summary>
+        /// <param name="lambda">The lambda syntax node</param>
+        /// <param name="rootQueryableType">The type of the IQueryable instance where a known LINQ operator is invoked on with this lambda</param>
+        /// <param name="context">The analysis context</param>
+        /// <param name="efContext">The EF-specific view of the semantic model</param>
+        /// <param name="treatAsWarning">If true, instructs any diagnostic reports to be flagged as warnings instead of errors. This is normally true when the analyzer cannot fully determine that the LINQ expression is made against an actual DbSet</param>
         static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, EFUsageContext efContext, bool treatAsWarning = false)
         {
-            var accessNodes = lambda.DescendantNodes()
-                                    .OfType<MemberAccessExpressionSyntax>();
-            var methodCallNodes = lambda.DescendantNodes()
-                                        .OfType<InvocationExpressionSyntax>();
-            var parameterNodes = lambda.DescendantNodes()
-                                       .OfType<ParameterSyntax>()
-                                       .ToDictionary(p => p.Identifier.ValueText, p => p);
+            var descendants = lambda.DescendantNodes();
 
+            var accessNodes = descendants.OfType<MemberAccessExpressionSyntax>();
+            var methodCallNodes = descendants.OfType<InvocationExpressionSyntax>();
+            var parameterNodes = descendants.OfType<ParameterSyntax>()
+                                            .ToDictionary(p => p.Identifier.ValueText, p => p);
+            var stringNodes = descendants.OfType<InterpolatedStringExpressionSyntax>();
+
+            //Easy one, all interpolated strings are invalid, it's just a case of whether to raise an
+            //error or warning
+            //
+            //TODO: Code fix candidate. Offer to replace the interpolated string with a raw concatenated
+            //equivalent
+            foreach (var node in stringNodes)
+            {
+                var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_UseOfInterpolatedStringInLinqExpressionRule : Error_UseOfInterpolatedStringInLinqExpressionRule, node.GetLocation());
+                context.ReportDiagnostic(diagnostic);
+            }
+
+            //Check for property accesses on read-only properties, expression-bodied members
+            //TODO: Also check for properties tagged with [NotMapped]
             foreach (var node in accessNodes)
             {
                 bool bValid = true;

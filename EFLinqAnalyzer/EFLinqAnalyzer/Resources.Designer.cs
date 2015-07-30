@@ -330,5 +330,59 @@ namespace EFLinqAnalyzer {
                 return ResourceManager.GetString("EFLINQ010_TITLE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An interpolated string compiles down to a call to String.Format(), which is not translatable to SQL in LINQ to Entities.
+        /// </summary>
+        internal static string EFLINQ011_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ011_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interoplated string cannot be used in a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ011_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ011_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interoplated string cannot be used in a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ011_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ011_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An interpolated string compiles down to a call to String.Format(), which is not translatable to SQL in LINQ to Entities. This is only a warning as the analyzer cannot determine if this LINQ expression is made against an actual DbSet&lt;T&gt;.
+        /// </summary>
+        internal static string EFLINQ012_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ012_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interoplated string potentially used in a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ012_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ012_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interoplated string potentially used in a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ012_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ012_TITLE", resourceCulture);
+            }
+        }
     }
 }

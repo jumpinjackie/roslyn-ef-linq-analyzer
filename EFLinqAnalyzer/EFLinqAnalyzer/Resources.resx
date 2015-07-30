@@ -207,4 +207,22 @@
   <data name="EFLINQ010_TITLE" xml:space="preserve">
     <value>Potential collection navigation property in a potential LINQ to Entities expression is not queryable</value>
   </data>
+  <data name="EFLINQ011_DESC" xml:space="preserve">
+    <value>An interpolated string compiles down to a call to String.Format(), which is not translatable to SQL in LINQ to Entities</value>
+  </data>
+  <data name="EFLINQ011_MSGFORMAT" xml:space="preserve">
+    <value>Interoplated string cannot be used in a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ011_TITLE" xml:space="preserve">
+    <value>Interoplated string cannot be used in a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ012_DESC" xml:space="preserve">
+    <value>An interpolated string compiles down to a call to String.Format(), which is not translatable to SQL in LINQ to Entities. This is only a warning as the analyzer cannot determine if this LINQ expression is made against an actual DbSet&lt;T&gt;</value>
+  </data>
+  <data name="EFLINQ012_MSGFORMAT" xml:space="preserve">
+    <value>Interoplated string potentially used in a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ012_TITLE" xml:space="preserve">
+    <value>Interoplated string potentially used in a LINQ to Entities expression</value>
+  </data>
 </root>

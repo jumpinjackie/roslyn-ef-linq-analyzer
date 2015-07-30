@@ -497,6 +497,23 @@ namespace EFLinqAnalyzer.Test
                 });
         }
 
+        [TestMethod]
+        public void EFLINQ011_LinqSelect()
+        {
+            var test = SourceFiles.EFLINQ011_LinqSelect;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ011",
+                    Message = String.Format("Interoplated string cannot be used in a LINQ to Entities expression"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 24, 77)
+                            }
+                });
+        }
+
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return null;
