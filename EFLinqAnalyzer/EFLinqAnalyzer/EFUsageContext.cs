@@ -13,7 +13,7 @@ namespace EFLinqAnalyzer
     /// <summary>
     /// An Entity Framework specific view of the current semantic model
     /// 
-    /// Symbols of interest to Entity Framework are pre-cached for easy lookup
+    /// Symbols of interest to Entity Framework are stashed for easy lookup
     /// </summary>
     public class EFUsageContext
     {
@@ -35,6 +35,9 @@ namespace EFLinqAnalyzer
         /// <returns>false if no DbContext or known entity types were discovered, true otherwise</returns>
         public bool Build()
         {
+            //TODO: Can we check if Entity Framework is even referenced? We could just
+            //bail out right here right now if it isn't referenced.
+
             var typeSymbols = _context.SemanticModel
                                       .LookupSymbols(_context.Node
                                                              .GetLocation()
@@ -96,9 +99,9 @@ namespace EFLinqAnalyzer
             return true;
         }
 
-        private static bool TypeUltimatelyDerivesFromDbContext(INamedTypeSymbol type)
+        internal static bool TypeUltimatelyDerivesFromDbContext(ITypeSymbol type)
         {
-            //Walk up the inheritance chain until we encounter DbContext or null (ie. Direct subclass of System.Object)
+            //Walk up the inheritance chain until we encounter DbContext or null (ie. We're at System.Object)
             var bt = type.BaseType;
             while (bt != null)
             {

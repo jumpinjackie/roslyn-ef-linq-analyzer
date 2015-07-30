@@ -228,7 +228,7 @@ namespace EFLinqAnalyzer
             var symbols = context.SemanticModel
                                  .LookupSymbols(classType.Identifier.Span.Start + 1)
                                  .OfType<ITypeSymbol>()
-                                 .Where(t => t?.BaseType?.Name == "DbContext");
+                                 .Where(t => EFUsageContext.TypeUltimatelyDerivesFromDbContext(t));
             
             foreach (var clsSym in symbols)
             {
@@ -364,7 +364,7 @@ namespace EFLinqAnalyzer
                         //We obviously should check what precedes it
                         if (methodName != "AsQueryable")
                         {
-                            bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType);
+                            bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType, efContext, context);
                             if (!bValid)
                             {
                                 var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule : Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
@@ -385,9 +385,9 @@ namespace EFLinqAnalyzer
             }
         }
 
-        private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType)
+        private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType, EFUsageContext efContext, SyntaxNodeAnalysisContext context)
         {
-            return CanonicalMethodNames.IsKnownMethod(node, memberExpr);
+            return CanonicalMethodNames.IsKnownMethod(node, memberExpr, rootQueryableType, efContext, context);
         }
         
         private static void AnalyzeLinqExpression(SyntaxNodeAnalysisContext context)
