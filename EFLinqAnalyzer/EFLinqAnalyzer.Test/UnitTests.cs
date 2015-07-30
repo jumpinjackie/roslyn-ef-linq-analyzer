@@ -514,6 +514,23 @@ namespace EFLinqAnalyzer.Test
                 });
         }
 
+        [TestMethod]
+        public void EFLINQ012_LinqSelect()
+        {
+            var test = SourceFiles.EFLINQ012_LinqSelect;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ012",
+                    Message = String.Format("Interoplated string potentially used in a LINQ to Entities expression"),
+                    Severity = DiagnosticSeverity.Warning,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 30, 69)
+                            }
+                });
+        }
+
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return null;

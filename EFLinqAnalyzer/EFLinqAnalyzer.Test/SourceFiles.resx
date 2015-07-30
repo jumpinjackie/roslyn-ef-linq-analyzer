@@ -181,6 +181,9 @@
   <data name="EFLINQ011_LinqSelect" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\EFLINQ011_LinqSelect.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="EFLINQ012_LinqSelect" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\EFLINQ012_LinqSelect.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="NonEFClassWithReadOnlyProperty" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\NonEFClassWithReadOnlyProperty.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

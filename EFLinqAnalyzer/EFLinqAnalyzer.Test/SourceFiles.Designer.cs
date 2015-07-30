@@ -723,6 +723,39 @@ namespace EFLinqAnalyzer.Test {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to using System.Linq;
+        ///using System.Data.Entity;
+        ///
+        ///namespace UnitTest
+        ///{
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///    }
+        ///
+        ///    public class Thing
+        ///    {
+        ///        public int Id { get; set; }
+        ///        public string Foo { get; set; }
+        ///        public string Bar { get; set; }
+        ///    }
+        ///
+        ///    class Program
+        ///    {
+        ///        static IQueryable&lt;Thing&gt; GetThings(MyContext context)
+        ///        {
+        ///            return context.Things;
+        ///        }
+        ///
+        ///        public static void [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EFLINQ012_LinqSelect {
+            get {
+                return ResourceManager.GetString("EFLINQ012_LinqSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to using System;
         ///using System.Collections.Generic;
         ///using System.Linq;
