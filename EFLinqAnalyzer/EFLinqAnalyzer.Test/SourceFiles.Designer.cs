@@ -186,6 +186,38 @@ namespace EFLinqAnalyzer.Test {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to using System.Linq;
+        ///using System.Data.Entity;
+        ///
+        ///namespace UnitTest
+        ///{
+        ///    public class Thing
+        ///    {
+        ///        public int Id { get; set; }
+        ///        public string Name { get; set; }
+        ///        public string Foo
+        ///        {
+        ///            get { return &quot;Foo: &quot; + this.Name; }
+        ///        }
+        ///        public string Bar =&gt; $&quot;Bar: {this.Name}&quot;;
+        ///    }
+        ///
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///    }
+        ///
+        ///    class Program
+        ///    {
+        ///        public static void Main(string[] [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EFLINQ002_LinqSelect_QuerySyntax {
+            get {
+                return ResourceManager.GetString("EFLINQ002_LinqSelect_QuerySyntax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to using System;
         ///using System.Collections.Generic;
         ///using System.Linq;
@@ -220,15 +252,17 @@ namespace EFLinqAnalyzer.Test {
         ///   Looks up a localized string similar to using System.Linq;
         ///using System.Data.Entity;
         ///
-        ///namespace TestCaseScratchPad
+        ///namespace UnitTest
         ///{
         ///    public class Thing
         ///    {
         ///        public int Id { get; set; }
-        ///
         ///        public string Name { get; set; }
-        ///
-        ///        public string Bar =&gt; $&quot;Foo: {this.Name}&quot;;
+        ///        public string Foo
+        ///        {
+        ///            get { return &quot;Foo: &quot; + this.Name; }
+        ///        }
+        ///        public string Bar =&gt; $&quot;Bar: {this.Name}&quot;;
         ///    }
         ///
         ///    public class MyContext : DbContext
@@ -238,10 +272,7 @@ namespace EFLinqAnalyzer.Test {
         ///
         ///    class Program
         ///    {
-        ///        public static void Main(string[] args)
-        ///        {
-        ///            using (var context = new MyContext())
-        ///            {        /// [rest of string was truncated]&quot;;.
+        ///        public static void Main(string[] [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ002_LinqWhere_QuerySyntax {
             get {

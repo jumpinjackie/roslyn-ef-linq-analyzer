@@ -1,0 +1,34 @@
+using System.Linq;
+using System.Data.Entity;
+
+namespace UnitTest
+{
+    public class Thing
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Foo
+        {
+            get { return "Foo: " + this.Name; }
+        }
+        public string Bar => $"Bar: {this.Name}";
+    }
+
+    public class MyContext : DbContext
+    {
+        public DbSet<Thing> Things { get; set; }
+    }
+
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            using (var context = new MyContext())
+            {
+                var items = from t in context.Things
+                            where t.Name == "Huh?"
+                            select new { t.Id, t.Name, t.Foo, t.Bar };
+            }
+        }
+    }
+}
