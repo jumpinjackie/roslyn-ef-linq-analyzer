@@ -163,7 +163,7 @@ namespace EFLinqAnalyzer.Test
                 new DiagnosticResult
                 {
                     Id = "EFLINQ001",
-                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBar", "Thing"),
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "Foo", "Thing"),
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
@@ -173,7 +173,7 @@ namespace EFLinqAnalyzer.Test
                 new DiagnosticResult
                 {
                     Id = "EFLINQ001",
-                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBarExpr", "Thing"),
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "Bar", "Thing"),
                     Severity = DiagnosticSeverity.Info,
                     Locations =
                         new[] {
@@ -183,21 +183,21 @@ namespace EFLinqAnalyzer.Test
                 new DiagnosticResult
                 {
                     Id = "EFLINQ002",
-                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "FooBar", "Thing"),
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "Bar", "Thing"),
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 35, 55)
+                                new DiagnosticResultLocation("Test0.cs", 29, 35)
                             }
                 },
                 new DiagnosticResult
                 {
                     Id = "EFLINQ002",
-                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "FooBarExpr", "Thing"),
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "Foo", "Thing"),
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 36, 56)
+                                new DiagnosticResultLocation("Test0.cs", 30, 35)
                             }
                 });
         }

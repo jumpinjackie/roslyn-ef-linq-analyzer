@@ -62,6 +62,15 @@ namespace EFLinqAnalyzer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entity Framework Gotchas.
+        /// </summary>
+        internal static string DIAGNOSTIC_CATEGORY {
+            get {
+                return ResourceManager.GetString("DIAGNOSTIC_CATEGORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Read-Only properties should not participate in IQueryable LINQ expressions (where clauses, joins or projections). Such properties will cause the EF LINQ provider to throw a NotSupportedException as they are not translatable to SQL.
         /// </summary>
         internal static string EFLINQ001_DESC {

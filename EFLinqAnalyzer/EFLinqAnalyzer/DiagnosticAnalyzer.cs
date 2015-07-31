@@ -13,168 +13,11 @@ namespace EFLinqAnalyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EFLinqAnalyzerAnalyzer : DiagnosticAnalyzer
     {
-        /// <summary>
-        /// EFLINQ001: Read-Only EF code first property
-        /// </summary>
-        private static DiagnosticDescriptor Info_CodeFirstClassReadOnlyRule = new DiagnosticDescriptor(
-            id: "EFLINQ001",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ001_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ001_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Info,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ001_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ002: Read-Only property used within LINQ to Entities expression
-        /// </summary>
-        private static DiagnosticDescriptor Error_CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
-            id: "EFLINQ002",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ002_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ002_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ002_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ003: Invalid static method call within LINQ to Entities expression
-        /// </summary>
-        private static DiagnosticDescriptor Error_CodeFirstUnsupportedStaticMethodInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ003",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ003_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ003_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ003_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ004: Invalid method call on instance within LINQ to Entities expression
-        /// </summary>
-        private static DiagnosticDescriptor Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ004",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ004_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ004_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ004_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ005: Read-Only property potentially used within LINQ to Entities expression
-        /// </summary>
-        private static DiagnosticDescriptor Warning_CodeFirstClassReadOnlyPropertyUsageRule = new DiagnosticDescriptor(
-            id: "EFLINQ005",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ005_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ005_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ005_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ006: Potential invalid static method call within LINQ to Entities expression
-        /// </summary>
-        private static DiagnosticDescriptor Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ006",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ006_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ006_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ006_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ007: Potential unsupported method call on instance within LINQ to Entities expression
-        /// </summary>
-        private static DiagnosticDescriptor Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ007",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ007_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ007_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ007_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ008: Collection navigation property not queryable
-        /// </summary>
-        private static DiagnosticDescriptor Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ008",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ008_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ008_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ008_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ009: Collection navigation property in a potential LINQ to Entities expression is not queryable
-        /// </summary>
-        private static DiagnosticDescriptor Warning_CodeFirstCollectionNavigationPropertyInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ009",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ009_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ009_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ009_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ010: Collection navigation property in a potential LINQ to Entities expression is not queryable (ambiguous entity type)
-        /// </summary>
-        private static DiagnosticDescriptor Warning_CodeFirstCollectionNavigationPropertyForAmbiguousEntityTypeInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ010",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ010_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ010_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ010_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ011: Interpolated strings cannot be used within a LINQ to Entities expression
-        /// </summary>
-        private static DiagnosticDescriptor Error_UseOfInterpolatedStringInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ011",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ011_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ011_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ011_DESC), Resources.ResourceManager, typeof(Resources)));
-
-        /// <summary>
-        /// EFLINQ012: Interpolated string potentially used within a LINQ to Entities expression
-        /// </summary>
-        private static DiagnosticDescriptor Warning_UseOfInterpolatedStringInLinqExpressionRule = new DiagnosticDescriptor(
-            id: "EFLINQ012",
-            title: new LocalizableResourceString(nameof(Resources.EFLINQ012_TITLE), Resources.ResourceManager, typeof(Resources)),
-            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ012_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
-            category: "Entity Framework Gotchas",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: new LocalizableResourceString(nameof(Resources.EFLINQ012_DESC), Resources.ResourceManager, typeof(Resources)));
-
-
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
             {
-                return ImmutableArray.Create(
-                    Info_CodeFirstClassReadOnlyRule,
-                    Error_CodeFirstClassReadOnlyPropertyUsageRule,
-                    Error_CodeFirstUnsupportedStaticMethodInLinqExpressionRule,
-                    Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule,
-                    Warning_CodeFirstClassReadOnlyPropertyUsageRule,
-                    Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule,
-                    Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule,
-                    Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule,
-                    Warning_CodeFirstCollectionNavigationPropertyInLinqExpressionRule,
-                    Warning_CodeFirstCollectionNavigationPropertyForAmbiguousEntityTypeInLinqExpressionRule,
-                    Error_UseOfInterpolatedStringInLinqExpressionRule,
-                    Warning_UseOfInterpolatedStringInLinqExpressionRule);
+                return DiagnosticCodes.SupportedDiagnostics;
             }
         }
 
@@ -199,7 +42,7 @@ namespace EFLinqAnalyzer
                         if (declCls != null && IsClassPartOfEFCodeFirstModel(declCls, context))
                         {
                             // For all such symbols, produce a diagnostic.
-                            var diagnostic = Diagnostic.Create(Info_CodeFirstClassReadOnlyRule, propNode.GetLocation(), propNode.Identifier.ValueText, declCls.Identifier.ValueText);
+                            var diagnostic = Diagnostic.Create(DiagnosticCodes.EFLINQ001, propNode.GetLocation(), propNode.Identifier.ValueText, declCls.Identifier.ValueText);
                             context.ReportDiagnostic(diagnostic);
                         }
                     }
@@ -214,7 +57,7 @@ namespace EFLinqAnalyzer
                         if (declCls != null && IsClassPartOfEFCodeFirstModel(declCls, context))
                         {
                             // For all such symbols, produce a diagnostic.
-                            var diagnostic = Diagnostic.Create(Info_CodeFirstClassReadOnlyRule, propNode.GetLocation(), propNode.Identifier.ValueText, declCls.Identifier.ValueText);
+                            var diagnostic = Diagnostic.Create(DiagnosticCodes.EFLINQ001, propNode.GetLocation(), propNode.Identifier.ValueText, declCls.Identifier.ValueText);
                             context.ReportDiagnostic(diagnostic);
                         }
                     }
@@ -235,7 +78,7 @@ namespace EFLinqAnalyzer
                 //Get all DbSet properties
                 var dbSetProperties = clsSym.GetMembers()
                                             .OfType<IPropertySymbol>()
-                                            .Where(p => p?.Type?.MetadataName == "DbSet`1");
+                                            .Where(p => p?.Type?.MetadataName == EFSpecialIdentifiers.DbSet);
 
                 foreach (var propSym in dbSetProperties)
                 {
@@ -252,143 +95,6 @@ namespace EFLinqAnalyzer
             }
             return false;
         }
-
-        /// <summary>
-        /// Validates the give lambda to see if it is a valid LINQ to Entities expression
-        /// </summary>
-        /// <param name="lambda">The lambda syntax node</param>
-        /// <param name="rootQueryableType">The type of the IQueryable instance where a known LINQ operator is invoked on with this lambda</param>
-        /// <param name="context">The analysis context</param>
-        /// <param name="efContext">The EF-specific view of the semantic model</param>
-        /// <param name="treatAsWarning">If true, instructs any diagnostic reports to be flagged as warnings instead of errors. This is normally true when the analyzer cannot fully determine that the LINQ expression is made against an actual DbSet</param>
-        static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, EFUsageContext efContext, bool treatAsWarning = false)
-        {
-            var descendants = lambda.DescendantNodes();
-
-            var accessNodes = descendants.OfType<MemberAccessExpressionSyntax>();
-            var methodCallNodes = descendants.OfType<InvocationExpressionSyntax>();
-            var parameterNodes = descendants.OfType<ParameterSyntax>()
-                                            .ToDictionary(p => p.Identifier.ValueText, p => p);
-            var stringNodes = descendants.OfType<InterpolatedStringExpressionSyntax>();
-
-            //Easy one, all interpolated strings are invalid, it's just a case of whether to raise an
-            //error or warning
-            //
-            //TODO: Code fix candidate. Offer to replace the interpolated string with a raw concatenated
-            //equivalent
-            foreach (var node in stringNodes)
-            {
-                var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_UseOfInterpolatedStringInLinqExpressionRule : Error_UseOfInterpolatedStringInLinqExpressionRule, node.GetLocation());
-                context.ReportDiagnostic(diagnostic);
-            }
-
-            //Check for property accesses on read-only properties, expression-bodied members
-            //TODO: Also check for properties tagged with [NotMapped]
-            foreach (var node in accessNodes)
-            {
-                bool bValid = true;
-
-                var identifier = (node.Expression as IdentifierNameSyntax);
-                var memberName = node?.Name;
-
-                if (identifier != null && memberName != null)
-                {
-                    var identText = identifier?.Identifier.ValueText ?? string.Empty;
-                    if (!string.IsNullOrEmpty(identText) && parameterNodes.ContainsKey(identText))
-                    {
-                        bValid = !(rootQueryableType.IsReadOnly(memberName.Identifier.ValueText));
-                    }
-                }
-
-                if (!bValid)
-                {
-                    var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstClassReadOnlyPropertyUsageRule : Error_CodeFirstClassReadOnlyPropertyUsageRule, node.GetLocation(), memberName.Identifier.ValueText, rootQueryableType.Name);
-                    context.ReportDiagnostic(diagnostic);
-                }
-            }
-
-            foreach (var node in methodCallNodes)
-            {
-                string methodName = null;
-                var memberExpr = node.Expression as MemberAccessExpressionSyntax;
-                var identExpr = node.Expression as IdentifierNameSyntax;
-                if (memberExpr != null)
-                {
-                    methodName = memberExpr?.Name?.Identifier.ValueText;
-
-                    //This is a LINQ operator (Where, Select, etc)
-                    if (CanonicalMethodNames.IsLinqOperator(methodName))
-                    {
-                        var expr = memberExpr.Expression as MemberAccessExpressionSyntax;
-                        if (expr != null)
-                        {
-                            var member = expr.Name as IdentifierNameSyntax;
-                            if (member != null)
-                            {
-                                string memberName = member.Identifier.ValueText;
-                                var applicableClasses = efContext.GetClassForProperty(memberName)
-                                                                 .Where(c => c.HasProperty(memberName));
-                                
-                                if (applicableClasses.Count() > 1)
-                                {
-                                    //TODO: Code fix candidate
-                                    //
-                                    //In such a case, inject an .AsQueryable() before the LINQ operator call
-                                    //and add using System.Linq if required
-                                    var diagnostic = Diagnostic.Create(Warning_CodeFirstCollectionNavigationPropertyForAmbiguousEntityTypeInLinqExpressionRule, member.GetLocation(), memberName);
-                                    context.ReportDiagnostic(diagnostic);
-                                }
-                                else
-                                {
-                                    var cls = applicableClasses.FirstOrDefault();
-                                    //There is only one class with this property and it is confirmed to be a collection
-                                    //navigation property
-                                    if (cls != null && cls.IsCollectionNavigationProperty(memberName))
-                                    {
-                                        //TODO: Code fix candidate
-                                        //
-                                        //In such a case, inject an .AsQueryable() before the LINQ operator call
-                                        //and add using System.Linq if required
-                                        var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstCollectionNavigationPropertyInLinqExpressionRule : Error_CodeFirstCollectionNavigationPropertyInLinqExpressionRule, member.GetLocation(), memberName, cls.Name);
-                                        context.ReportDiagnostic(diagnostic);
-                                    }
-                                }
-                            }
-                            //TODO: If not, check that the preceding member is IQueryable<T> and that T is a known
-                            //entity type
-                        }
-                    }
-                    else
-                    {
-                        //TODO: AsQueryable() shouldn't be a blanket exception.
-                        //We obviously should check what precedes it
-                        if (methodName != "AsQueryable")
-                        {
-                            bool bValid = IsSupportedLinqToEntitiesMethod(node, memberExpr, rootQueryableType, efContext, context);
-                            if (!bValid)
-                            {
-                                var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule : Error_CodeFirstUnsupportedInstanceMethodInLinqExpressionRule, node.GetLocation(), methodName);
-                                context.ReportDiagnostic(diagnostic);
-                            }
-                        }
-                    }
-                }
-                else if (identExpr != null) //A non-instance (static) method call, most certainly illegal
-                {
-                    if (!CanonicalMethodNames.IsKnownMethod(identExpr))
-                    {
-                        methodName = identExpr.Identifier.ValueText;
-                        var diagnostic = Diagnostic.Create(treatAsWarning ? Warning_CodeFirstUnsupportedStaticMethodInLinqExpressionRule : Error_CodeFirstUnsupportedStaticMethodInLinqExpressionRule, node.GetLocation(), methodName);
-                        context.ReportDiagnostic(diagnostic);
-                    }
-                }
-            }
-        }
-
-        private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType, EFUsageContext efContext, SyntaxNodeAnalysisContext context)
-        {
-            return CanonicalMethodNames.IsKnownMethod(node, memberExpr, rootQueryableType, efContext, context);
-        }
         
         private static void AnalyzeLinqExpression(SyntaxNodeAnalysisContext context)
         {
@@ -404,129 +110,186 @@ namespace EFLinqAnalyzer
             var lambda = context.Node as LambdaExpressionSyntax;
             if (query != null)
             {
-                //First item on checklist, find out our root queryable
-
+                AnalyzeQueryExpression(context, efContext, query);
             }
             else if (lambda != null)
             {
-                var lambdaAssign = lambda.Parent as EqualsValueClauseSyntax;
-                var arg = lambda.Parent as ArgumentSyntax;
-                if (arg != null) //The lambda in question is being passed as an argument
+                AnalyzeLambdaInLinqExpression(context, efContext, lambda);
+            }
+        }
+
+        private static void AnalyzeLambdaInLinqExpression(SyntaxNodeAnalysisContext context, EFUsageContext efContext, LambdaExpressionSyntax lambda)
+        {
+            var lambdaAssign = lambda.Parent as EqualsValueClauseSyntax;
+            var arg = lambda.Parent as ArgumentSyntax;
+            if (arg != null) //The lambda in question is being passed as an argument
+            {
+                var parent = arg.Parent;
+                while (parent != null && !(parent is ArgumentListSyntax))
                 {
-                    var parent = arg.Parent;
-                    while (parent != null && !(parent is ArgumentListSyntax))
-                    {
-                        parent = parent.Parent;
-                    }
+                    parent = parent.Parent;
+                }
 
-                    if (parent != null) //Which should be part of an ArgumentList
+                if (parent != null) //Which should be part of an ArgumentList
+                {
+                    var argList = parent;
+                    var invoc = argList?.Parent as InvocationExpressionSyntax;
+                    if (invoc != null) //Which should be part of an invocation
                     {
-                        var argList = parent;
-                        var invoc = argList?.Parent as InvocationExpressionSyntax;
-                        if (invoc != null) //Which should be part of an invocation
+                        var memberExpr = invoc.Expression as MemberAccessExpressionSyntax;
+                        if (memberExpr != null)
                         {
-                            var memberExpr = invoc.Expression as MemberAccessExpressionSyntax;
-                            if (memberExpr != null)
+                            switch (memberExpr?.Name?.Identifier.ValueText)
                             {
-                                switch (memberExpr?.Name?.Identifier.ValueText)
-                                {
-                                    case CanonicalMethodNames.LinqOperators.Select:
-                                    case CanonicalMethodNames.LinqOperators.Where:
+                                case CanonicalMethodNames.LinqOperators.Select:
+                                case CanonicalMethodNames.LinqOperators.Where:
+                                    {
+                                        var si = context.SemanticModel.GetSymbolInfo(memberExpr.Expression);
+
+                                        var lts = si.Symbol as ILocalSymbol;
+                                        var pts = si.Symbol as IPropertySymbol;
+                                        //Is this method called on a property?
+                                        if (pts != null)
                                         {
-                                            var si = context.SemanticModel.GetSymbolInfo(memberExpr.Expression);
-
-                                            var lts = si.Symbol as ILocalSymbol;
-                                            var pts = si.Symbol as IPropertySymbol;
-                                            //Is this method called on a property?
-                                            if (pts != null)
+                                            var nts = pts.Type as INamedTypeSymbol;
+                                            if (nts != null)
                                             {
-                                                var nts = pts.Type as INamedTypeSymbol;
-                                                if (nts != null)
+                                                //Like a DbSet<T>?
+                                                if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
                                                 {
-                                                    //Like a DbSet<T>?
-                                                    if (nts.MetadataName == "DbSet`1")
+                                                    //That is part of a class derived from DbContext?
+                                                    if (pts?.ContainingType?.BaseType?.Name == EFSpecialIdentifiers.DbContext)
                                                     {
-                                                        //That is part of a class derived from DbContext?
-                                                        if (pts?.ContainingType?.BaseType?.Name == "DbContext")
-                                                        {
-                                                            var typeArg = nts.TypeArguments[0];
-                                                            //Let's give our method some assistance, by checking what T actually is
-                                                            var clsInfo = efContext.GetClassInfo(typeArg);
-                                                            if (clsInfo != null)
-                                                            {
-                                                                //Okay now let's see if this lambda is valid in the EF context
-                                                                ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            else if (lts != null) //The linq method was called on a local variable
-                                            {
-                                                var nts = lts.Type as INamedTypeSymbol;
-                                                if (nts != null && nts.TypeArguments.Length == 1)
-                                                {
-                                                    //This is some generic type with one type argument
-                                                    var typeArg = nts.TypeArguments[0];
-                                                    if (nts.MetadataName == "DbSet`1")
-                                                    {
-                                                        //TODO: Should still actually check that it is ultimately assigned
-                                                        //from a DbSet<T> property of a DbContext derived class
-
+                                                        var typeArg = nts.TypeArguments[0];
+                                                        //Let's give our method some assistance, by checking what T actually is
                                                         var clsInfo = efContext.GetClassInfo(typeArg);
                                                         if (clsInfo != null)
                                                         {
-                                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
-                                                        }
-                                                    }
-                                                    else if (nts.MetadataName == "IQueryable`1")
-                                                    {
-                                                        var clsInfo = efContext.GetClassInfo(typeArg);
-                                                        if (clsInfo != null)
-                                                        {
-                                                            ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning: true);
+                                                            //Okay now let's see if this lambda is valid in the EF context
+                                                            LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
                                                         }
                                                     }
                                                 }
                                             }
                                         }
-                                        break;
+                                        else if (lts != null) //The linq method was called on a local variable
+                                        {
+                                            var nts = lts.Type as INamedTypeSymbol;
+                                            if (nts != null && nts.TypeArguments.Length == 1)
+                                            {
+                                                //This is some generic type with one type argument
+                                                var typeArg = nts.TypeArguments[0];
+                                                if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
+                                                {
+                                                    //TODO: Should still actually check that it is ultimately assigned
+                                                    //from a DbSet<T> property of a DbContext derived class
+
+                                                    var clsInfo = efContext.GetClassInfo(typeArg);
+                                                    if (clsInfo != null)
+                                                    {
+                                                        LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
+                                                    }
+                                                }
+                                                else if (nts.MetadataName == EFSpecialIdentifiers.IQueryable)
+                                                {
+                                                    var clsInfo = efContext.GetClassInfo(typeArg);
+                                                    if (clsInfo != null)
+                                                    {
+                                                        LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning: true);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (lambdaAssign != null) //The lambda in question is being assigned
+            {
+                var localLambdaDecl = lambdaAssign?.Parent?.Parent?.Parent as LocalDeclarationStatementSyntax;
+                if (localLambdaDecl != null)
+                {
+                    var declType = localLambdaDecl?.Declaration?.Type as GenericNameSyntax;
+                    if (declType != null)
+                    {
+                        //Is Expression<T>
+                        if (declType.Identifier.ValueText == EFSpecialIdentifiers.Expression && declType.TypeArgumentList.Arguments.Count == 1)
+                        {
+                            //The T is Func<TInput, TOutput>
+                            var exprTypeArg = declType.TypeArgumentList.Arguments[0] as GenericNameSyntax;
+                            if (exprTypeArg != null &&
+                                exprTypeArg.Identifier.ValueText == EFSpecialIdentifiers.Func &&
+                                exprTypeArg.TypeArgumentList.Arguments.Count == 2)
+                            {
+                                var inputType = exprTypeArg.TypeArgumentList.Arguments[0] as IdentifierNameSyntax;
+                                var outputType = exprTypeArg.TypeArgumentList.Arguments[1] as PredefinedTypeSyntax;
+                                //The TOutput in Func<TInput, TOutput> is bool
+                                if (inputType != null && outputType != null && outputType.Keyword.ValueText == EFSpecialIdentifiers.Boolean)
+                                {
+                                    var si = context.SemanticModel.GetSymbolInfo(inputType);
+                                    var ts = efContext.EntityTypes.FirstOrDefault(t => t == si.Symbol);
+                                    if (ts != null)
+                                    {
+                                        var clsInfo = efContext.GetClassInfo(ts);
+                                        if (clsInfo != null)
+                                        {
+                                            LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                else if (lambdaAssign != null) //The lambda in question is being assigned
+            }
+        }
+
+        private static void AnalyzeQueryExpression(SyntaxNodeAnalysisContext context, EFUsageContext efContext, QueryExpressionSyntax query)
+        {
+            //I can't believe how much easier this is compared to Extension Method syntax! Then again
+            //query syntax does mean its own dedicated set of C# keywords, which would means its dedicate
+            //set of syntax node types
+
+            //First item on checklist, find out our root queryable
+            var memberExpr = query.FromClause.Expression as MemberAccessExpressionSyntax;
+            if (memberExpr != null) // from $var in $ident.$prop
+            {
+                var ident = memberExpr.Expression as IdentifierNameSyntax;
+                var prop = memberExpr.Name;
+                if (ident != null && prop != null)
                 {
-                    var localLambdaDecl = lambdaAssign?.Parent?.Parent?.Parent as LocalDeclarationStatementSyntax;
-                    if (localLambdaDecl != null)
+                    var si = context.SemanticModel.GetSymbolInfo(ident);
+                    var type = si.Symbol?.TryGetType();
+                    if (type != null)
                     {
-                        var declType = localLambdaDecl?.Declaration?.Type as GenericNameSyntax;
-                        if (declType != null)
+                        //$ident is a DbContext
+                        if (efContext.DbContexts.Contains(type))
                         {
-                            //Is Expression<T>
-                            if (declType.Identifier.ValueText == "Expression" && declType.TypeArgumentList.Arguments.Count == 1)
+                            //We're expecting $prop to be a symbol
+                            si = context.SemanticModel.GetSymbolInfo(prop);
+                            var ps = si.Symbol as IPropertySymbol;
+                            if (ps != null && ps.Type.MetadataName == EFSpecialIdentifiers.DbSet)
                             {
-                                //The T is Func<TInput, TOutput>
-                                var exprTypeArg = declType.TypeArgumentList.Arguments[0] as GenericNameSyntax;
-                                if (exprTypeArg != null &&
-                                    exprTypeArg.Identifier.ValueText == "Func" &&
-                                    exprTypeArg.TypeArgumentList.Arguments.Count == 2)
+                                var nts = ps.Type as INamedTypeSymbol;
+                                if (nts != null)
                                 {
-                                    var inputType = exprTypeArg.TypeArgumentList.Arguments[0] as IdentifierNameSyntax;
-                                    var outputType = exprTypeArg.TypeArgumentList.Arguments[1] as PredefinedTypeSyntax;
-                                    //The TOutput in Func<TInput, TOutput> is bool
-                                    if (inputType != null && outputType != null && outputType.Keyword.ValueText == "bool")
+                                    var typeArg = nts.TypeArguments[0];
+                                    var cls = efContext.GetClassInfo(typeArg);
+                                    if (cls != null)
                                     {
-                                        var si = context.SemanticModel.GetSymbolInfo(inputType);
-                                        var ts = efContext.EntityTypes.FirstOrDefault(t => t == si.Symbol);
-                                        if (ts != null)
+                                        bool treatAsWarning = false;
+
+                                        var paramNodes = new Dictionary<string, ContextualLinqParameter>();
+                                        var fromVar = new ContextualLinqParameter(query.FromClause.Identifier);
+                                        paramNodes[fromVar.Name] = fromVar;
+                                        var descendants = query.Body.DescendantNodes();
+                                        var memberAccesses = descendants.OfType<MemberAccessExpressionSyntax>();
+                                        foreach (var access in memberAccesses)
                                         {
-                                            var clsInfo = efContext.GetClassInfo(ts);
-                                            if (clsInfo != null)
-                                            {
-                                                ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
-                                            }
+                                            LinqExpressionValidator.ValidateMemberAccessInLinqExpression(access, cls, context, paramNodes, treatAsWarning);
                                         }
                                     }
                                 }
