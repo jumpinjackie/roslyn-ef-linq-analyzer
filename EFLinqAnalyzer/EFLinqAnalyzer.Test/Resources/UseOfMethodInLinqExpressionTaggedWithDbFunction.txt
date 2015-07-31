@@ -1,0 +1,39 @@
+using System;
+using System.Linq;
+using System.Data.Entity;
+using System.Data.Entity.Spatial;
+using System.Data.Entity.SqlServer;
+
+namespace UnitTest
+{
+    public class Thing
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public static class HelperFunctions
+    {
+        [DbFunction("Helpers", "IsAnswerToUniverse")]
+        public static bool IsAnswerToUniverse(Thing thing)
+        {
+            return thing.Id == 42;
+        }
+    }
+
+    public class MyContext : DbContext
+    {
+        public DbSet<Thing> Things { get; set; }
+    }
+
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            using (var context = new MyContext())
+            {
+                var items = context.Things.Where(t => HelperFunctions.IsAnswerToUniverse(t));
+            }
+        }
+    }
+}

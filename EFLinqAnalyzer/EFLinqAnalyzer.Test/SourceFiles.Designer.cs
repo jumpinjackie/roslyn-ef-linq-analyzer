@@ -348,27 +348,24 @@ namespace EFLinqAnalyzer.Test {
         
         /// <summary>
         ///   Looks up a localized string similar to using System;
-        ///using System.Collections.Generic;
         ///using System.Linq;
-        ///using System.Text;
-        ///using System.Threading.Tasks;
-        ///using System.Diagnostics;
         ///using System.Data.Entity;
         ///using System.Data.Entity.Spatial;
+        ///using System.Data.Entity.SqlServer;
         ///
-        ///namespace ConsoleApplication1
+        ///namespace UnitTest
         ///{
-        ///    public class MyContext : DbContext
-        ///    {
-        ///        public DbSet&lt;Thing&gt; Things { get; set; }
-        ///    }
-        ///
         ///    public class Thing
         ///    {
-        ///        public string Foo { get; set; }
-        ///        public DateTime At { get; set; }
-        ///        public double ADouble { get; set; }
-        ///  [rest of string was truncated]&quot;;.
+        ///        public int Id { get; set; }
+        ///        public double Value { get; set; }
+        ///        public string Name { get; set; }
+        ///        public DateTime? UpdatedOn { get; set; }
+        ///        public DateTime? CreatedOn { get; set; }
+        ///        public DbGeometry Geom { get; set; }
+        ///        public DbGeography Geog { get; set; }
+        ///    }
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ003_LinqSelect_ValidMethods {
             get {
@@ -805,6 +802,38 @@ namespace EFLinqAnalyzer.Test {
         internal static string NonEFClassWithReadOnlyPropertyExprMember {
             get {
                 return ResourceManager.GetString("NonEFClassWithReadOnlyPropertyExprMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///using System.Linq;
+        ///using System.Data.Entity;
+        ///using System.Data.Entity.Spatial;
+        ///using System.Data.Entity.SqlServer;
+        ///
+        ///namespace UnitTest
+        ///{
+        ///    public class Thing
+        ///    {
+        ///        public int Id { get; set; }
+        ///        public string Name { get; set; }
+        ///    }
+        ///
+        ///    public static class HelperFunctions
+        ///    {
+        ///        [DbFunction(&quot;Helpers&quot;, &quot;IsAnswerToUniverse&quot;)]
+        ///        public static bool IsAnswerToUniverse(Thing thing)
+        ///        {
+        ///            return thing.Id == 42;
+        ///        }
+        ///    }
+        ///
+        ///     [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string UseOfMethodInLinqExpressionTaggedWithDbFunction {
+            get {
+                return ResourceManager.GetString("UseOfMethodInLinqExpressionTaggedWithDbFunction", resourceCulture);
             }
         }
     }

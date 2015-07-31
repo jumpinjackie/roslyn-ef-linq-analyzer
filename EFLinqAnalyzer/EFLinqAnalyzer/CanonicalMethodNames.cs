@@ -765,7 +765,7 @@ namespace EFLinqAnalyzer
             var miSym = symInfo.Symbol as IMethodSymbol;
             if (miSym != null)
             {
-                if (miSym.GetAttributes().Any(a => a.AttributeClass.MetadataName == "DbFunction"))
+                if (miSym.GetAttributes().Any(a => a.AttributeClass.MetadataName == "DbFunctionAttribute"))
                     return true;
             }
 

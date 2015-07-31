@@ -531,6 +531,13 @@ namespace EFLinqAnalyzer.Test
                 });
         }
 
+        [TestMethod]
+        public void UseOfMethodInLinqExpressionTaggedWithDbFunction()
+        {
+            var test = SourceFiles.UseOfMethodInLinqExpressionTaggedWithDbFunction;
+            VerifyCSharpDiagnostic(test);
+        }
+
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
             return null;
