@@ -8,8 +8,11 @@ if required) and seeing if it compiles
 
 namespace TestCaseScratchPad
 {
-   class Program
-   {
-       public static void Main(string[] args) { }
-   }
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            
+        }
+    }
 }

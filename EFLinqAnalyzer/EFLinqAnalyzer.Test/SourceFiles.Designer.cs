@@ -217,6 +217,39 @@ namespace EFLinqAnalyzer.Test {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to using System.Linq;
+        ///using System.Data.Entity;
+        ///
+        ///namespace TestCaseScratchPad
+        ///{
+        ///    public class Thing
+        ///    {
+        ///        public int Id { get; set; }
+        ///
+        ///        public string Name { get; set; }
+        ///
+        ///        public string Bar =&gt; $&quot;Foo: {this.Name}&quot;;
+        ///    }
+        ///
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///    }
+        ///
+        ///    class Program
+        ///    {
+        ///        public static void Main(string[] args)
+        ///        {
+        ///            using (var context = new MyContext())
+        ///            {        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EFLINQ002_LinqWhere_QuerySyntax {
+            get {
+                return ResourceManager.GetString("EFLINQ002_LinqWhere_QuerySyntax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to using System;
         ///using System.Collections.Generic;
         ///using System.Linq;

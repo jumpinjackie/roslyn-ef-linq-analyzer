@@ -156,6 +156,53 @@ namespace EFLinqAnalyzer.Test
         }
 
         [TestMethod]
+        public void EFLINQ002_LinqWhere_QuerySyntax()
+        {
+            var test = SourceFiles.EFLINQ002_LinqWhere_QuerySyntax;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBar", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 10, 9)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ001",
+                    Message = String.Format("Property '{0}' in type '{1}' not translatable in LINQ to Entities", "FooBarExpr", "Thing"),
+                    Severity = DiagnosticSeverity.Info,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 14, 9)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ002",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "FooBar", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 35, 55)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ002",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "FooBarExpr", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 36, 56)
+                            }
+                });
+        }
+
+        [TestMethod]
         public void EFLINQ002_LinqSelect()
         {
             var test = SourceFiles.EFLINQ002_LinqSelect;

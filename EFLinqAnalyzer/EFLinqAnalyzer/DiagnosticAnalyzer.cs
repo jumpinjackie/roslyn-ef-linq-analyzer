@@ -181,7 +181,7 @@ namespace EFLinqAnalyzer
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterSyntaxNodeAction(AnalyzeEFCodeFirstModelClassReadOnlyProperty, SyntaxKind.PropertyDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeLinqExpression, SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeLinqExpression, SyntaxKind.SimpleLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression, SyntaxKind.QueryExpression);
         }
         
         private static void AnalyzeEFCodeFirstModelClassReadOnlyProperty(SyntaxNodeAnalysisContext context)
@@ -400,8 +400,14 @@ namespace EFLinqAnalyzer
 
             //Check if the lambda is part of an IQueryable call chain. If so, check that it only contains valid
             //EF LINQ constructs (initializers, entity members, entity navigation properties)
+            var query = context.Node as QueryExpressionSyntax;
             var lambda = context.Node as LambdaExpressionSyntax;
-            if (lambda != null)
+            if (query != null)
+            {
+                //First item on checklist, find out our root queryable
+
+            }
+            else if (lambda != null)
             {
                 var lambdaAssign = lambda.Parent as EqualsValueClauseSyntax;
                 var arg = lambda.Parent as ArgumentSyntax;
