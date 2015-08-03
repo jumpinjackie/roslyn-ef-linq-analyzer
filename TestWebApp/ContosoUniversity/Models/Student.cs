@@ -18,6 +18,7 @@ namespace ContosoUniversity.Models
         public string Unmapped
         {
             get { return Guid.NewGuid().ToString(); }
+            set { }
         }
         
         public string FullNameExpr => LastName + ", " + FirstMidName;
