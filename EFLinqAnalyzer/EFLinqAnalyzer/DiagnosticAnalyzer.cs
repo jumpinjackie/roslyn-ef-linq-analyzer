@@ -221,7 +221,7 @@ namespace EFLinqAnalyzer
                                 var inputType = exprTypeArg.TypeArgumentList.Arguments[0] as IdentifierNameSyntax;
                                 var outputType = exprTypeArg.TypeArgumentList.Arguments[1] as PredefinedTypeSyntax;
                                 //The TOutput in Func<TInput, TOutput> is bool
-                                if (inputType != null && outputType != null && outputType.Keyword.ValueText == EFSpecialIdentifiers.Boolean)
+                                if (inputType != null && outputType != null && outputType.Keyword.ValueText == EFSpecialIdentifiers.BooleanShort)
                                 {
                                     var si = context.SemanticModel.GetSymbolInfo(inputType);
                                     var ts = efContext.EntityTypes.FirstOrDefault(t => t == si.Symbol);

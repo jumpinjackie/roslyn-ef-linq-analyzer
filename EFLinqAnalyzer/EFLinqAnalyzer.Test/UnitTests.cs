@@ -562,7 +562,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Error,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 50, 57)
+                                new DiagnosticResultLocation("Test0.cs", 52, 71)
                             }
                 });
         }
@@ -575,18 +575,18 @@ namespace EFLinqAnalyzer.Test
         }
 
         [TestMethod]
-        public void EFLINQ010_LinqWhere()
+        public void EFLINQ009_LinqWhere()
         {
-            var test = SourceFiles.EFLINQ010_LinqWhere;
+            var test = SourceFiles.EFLINQ009_LinqWhere;
             VerifyCSharpDiagnostic(test,
                 new DiagnosticResult
                 {
-                    Id = "EFLINQ010",
-                    Message = String.Format("Potential navigation property '{0}' within a potential LINQ to Entities expression is not queryable", "Sprockets"),
+                    Id = "EFLINQ009",
+                    Message = String.Format("Navigation property '{0}' of type '{1}' within a potential LINQ to Entities expression is not queryable", "Sprockets", "Thing"),
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 58, 57)
+                                new DiagnosticResultLocation("Test0.cs", 60, 63)
                             }
                 });
         }

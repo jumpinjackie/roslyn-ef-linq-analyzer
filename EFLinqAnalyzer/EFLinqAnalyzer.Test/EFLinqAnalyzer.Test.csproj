@@ -207,7 +207,7 @@
     <None Include="Resources\EFLINQ008_LinqWhere_LegitimateUse.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\EFLINQ010_LinqWhere.txt" />
+    <None Include="Resources\EFLINQ009_LinqWhere.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\EFLINQ011_LinqSelect.txt" />

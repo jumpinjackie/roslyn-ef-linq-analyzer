@@ -181,8 +181,8 @@
   <data name="EFLINQ008_LinqWhere_LegitimateUse" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\EFLINQ008_LinqWhere_LegitimateUse.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="EFLINQ010_LinqWhere" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\EFLINQ010_LinqWhere.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="EFLINQ009_LinqWhere" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\EFLINQ009_LinqWhere.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="EFLINQ011_LinqSelect" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\EFLINQ011_LinqSelect.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>

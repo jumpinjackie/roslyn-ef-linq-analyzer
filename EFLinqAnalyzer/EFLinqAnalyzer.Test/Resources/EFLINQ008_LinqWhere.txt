@@ -48,6 +48,8 @@ namespace ConsoleApplication1
             using (var context = new MyContext())
             {
                 var items = context.Things.Where(t => t.Sprockets.Any(s => s.Name == "Ssdkfjds"));
+                Func<Sprocket, bool> predicate = s => s.Name == "Ssdkfjd";
+                var items = context.Things.Where(t => t.Sprockets.Any(predicate));
             }
         }
     }

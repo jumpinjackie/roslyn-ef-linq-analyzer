@@ -14,9 +14,14 @@ namespace EFLinqAnalyzer
         public const string AsQueryable = nameof(AsQueryable);
 
         /// <summary>
+        /// Boolean
+        /// </summary>
+        public const string Boolean = nameof(Boolean);
+
+        /// <summary>
         /// bool
         /// </summary>
-        public const string Boolean = "bool";
+        public const string BooleanShort = "bool";
 
         /// <summary>
         /// DbContext

@@ -745,9 +745,9 @@ namespace EFLinqAnalyzer.Test {
         ///        public int Id { get; set; }
         ///        pu [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string EFLINQ010_LinqWhere {
+        internal static string EFLINQ009_LinqWhere {
             get {
-                return ResourceManager.GetString("EFLINQ010_LinqWhere", resourceCulture);
+                return ResourceManager.GetString("EFLINQ009_LinqWhere", resourceCulture);
             }
         }
         

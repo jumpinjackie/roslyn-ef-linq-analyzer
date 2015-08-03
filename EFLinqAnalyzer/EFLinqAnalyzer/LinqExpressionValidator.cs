@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
@@ -41,7 +42,6 @@ namespace EFLinqAnalyzer
             }
 
             //Check for property accesses on read-only properties, expression-bodied members
-            //TODO: Also check for properties tagged with [NotMapped]
             foreach (var node in accessNodes)
             {
                 ValidateMemberAccessInLinqExpression(node, rootQueryableType, context, parameterNodes, treatAsWarning);
@@ -74,15 +74,31 @@ namespace EFLinqAnalyzer
                             string memberName = member.Identifier.ValueText;
                             var applicableClasses = efContext.GetClassForProperty(memberName)
                                                              .Where(c => c.HasProperty(memberName));
-
+                            
                             if (applicableClasses.Count() > 1)
                             {
-                                //TODO: Code fix candidate
-                                //
-                                //In such a case, inject an .AsQueryable() before the LINQ operator call
-                                //and add using System.Linq if required
-                                var diagnostic = Diagnostic.Create(DiagnosticCodes.EFLINQ010, member.GetLocation(), memberName);
-                                context.ReportDiagnostic(diagnostic);
+                                //See if semantic model can help us disambiguate
+                                var si = context.SemanticModel.GetSymbolInfo(expr.Expression);
+                                var type = si.Symbol.TryGetType();
+                                if (type != null)
+                                {
+                                    var cls = efContext.GetClassInfo(type);
+                                    //There is only one class with this property and it is confirmed to be a collection
+                                    //navigation property
+                                    if (cls != null && cls.IsCollectionNavigationProperty(memberName))
+                                    {
+                                        ValidateNavigationPropertyAccess(node, context, efContext, treatAsWarning, memberName, cls);
+                                    }
+                                }
+                                else
+                                {
+                                    //TODO: Code fix candidate
+                                    //
+                                    //In such a case, inject an .AsQueryable() before the LINQ operator call
+                                    //and add using System.Linq if required
+                                    var diagnostic = Diagnostic.Create(DiagnosticCodes.EFLINQ010, member.GetLocation(), memberName);
+                                    context.ReportDiagnostic(diagnostic);
+                                }
                             }
                             else
                             {
@@ -91,12 +107,7 @@ namespace EFLinqAnalyzer
                                 //navigation property
                                 if (cls != null && cls.IsCollectionNavigationProperty(memberName))
                                 {
-                                    //TODO: Code fix candidate
-                                    //
-                                    //In such a case, inject an .AsQueryable() before the LINQ operator call
-                                    //and add using System.Linq if required
-                                    var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ009 : DiagnosticCodes.EFLINQ008, member.GetLocation(), memberName, cls.Name);
-                                    context.ReportDiagnostic(diagnostic);
+                                    ValidateNavigationPropertyAccess(node, context, efContext, treatAsWarning, memberName, cls);
                                 }
                             }
                         }
@@ -126,6 +137,38 @@ namespace EFLinqAnalyzer
                     methodName = identExpr.Identifier.ValueText;
                     var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ006 : DiagnosticCodes.EFLINQ003, node.GetLocation(), methodName);
                     context.ReportDiagnostic(diagnostic);
+                }
+            }
+        }
+
+        private static void ValidateNavigationPropertyAccess(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext context, EFUsageContext efContext, bool treatAsWarning, string memberName, EFCodeFirstClassInfo cls)
+        {
+            if (node.ArgumentList.Arguments.Count == 1 &&
+                node.ArgumentList.Arguments[0].Expression.Kind() != SyntaxKind.SimpleLambdaExpression)
+            {
+                if (node.ArgumentList.Arguments[0].Expression.Kind() == SyntaxKind.IdentifierName)
+                {
+                    //Follow the identifier back to its assignment
+                    var si = context.SemanticModel.GetSymbolInfo(node.ArgumentList.Arguments[0].Expression);
+                    if (si.Symbol?.Kind == SymbolKind.Local)
+                    {
+                        var type = si.Symbol.TryGetType() as INamedTypeSymbol;
+
+                        //The variable inside our LINQ sub-operator is a Func<T, bool> where T
+                        //is a known entity type
+                        if (type != null &&
+                            type.MetadataName == "Func`2" &&
+                            efContext.GetClassInfo(type.TypeArguments[0]) != null &&
+                            type.TypeArguments[1].MetadataName == EFSpecialIdentifiers.Boolean)
+                        {
+                            //TODO: Code fix candidate
+                            //
+                            //In such a case, inject an .AsQueryable() before the LINQ operator call
+                            //and add using System.Linq if required and convert the variable from Func<T, bool> to Expression<Func<T, bool>>
+                            var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ009 : DiagnosticCodes.EFLINQ008, node.ArgumentList.Arguments[0].Expression.GetLocation(), memberName, cls.Name);
+                            context.ReportDiagnostic(diagnostic);
+                        }
+                    }
                 }
             }
         }
