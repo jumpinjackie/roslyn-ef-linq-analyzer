@@ -154,6 +154,30 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ012_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ013: (Error) Property marked with [NotMapped] accessed within a LINQ to Entities expression
+        /// </summary>
+        public static DiagnosticDescriptor EFLINQ013 = new DiagnosticDescriptor(
+            id: nameof(EFLINQ013),
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ013_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ013_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: Resources.DIAGNOSTIC_CATEGORY,
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ013_DESC), Resources.ResourceManager, typeof(Resources)));
+
+        /// <summary>
+        /// EFLINQ014: (Warning) Property marked with [NotMapped] accessed within a potential LINQ to Entities expression
+        /// </summary>
+        public static DiagnosticDescriptor EFLINQ014 = new DiagnosticDescriptor(
+            id: nameof(EFLINQ014),
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ014_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ014_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: Resources.DIAGNOSTIC_CATEGORY,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ014_DESC), Resources.ResourceManager, typeof(Resources)));
+
         public static ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
             EFLINQ001,
             EFLINQ002,
@@ -166,6 +190,8 @@ namespace EFLinqAnalyzer
             EFLINQ009,
             EFLINQ010,
             EFLINQ011,
-            EFLINQ012);
+            EFLINQ012,
+            EFLINQ013,
+            EFLINQ014);
     }
 }

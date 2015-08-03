@@ -228,4 +228,22 @@
   <data name="EFLINQ012_TITLE" xml:space="preserve">
     <value>Interoplated string potentially used in a LINQ to Entities expression</value>
   </data>
+  <data name="EFLINQ013_DESC" xml:space="preserve">
+    <value>Any member marked with [NotMapped] is excluded from database mapping, thus inherently un-usuable within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ013_MSGFORMAT" xml:space="preserve">
+    <value>Property '{0}' of type '{1}' marked with [NotMapped] accessed within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ013_TITLE" xml:space="preserve">
+    <value>Property marked with [NotMapped] accessed within a LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ014_DESC" xml:space="preserve">
+    <value>Any member marked with [NotMapped] is excluded from database mapping, thus inherently un-usuable within a LINQ to Entities expression. This is a warning because the analyzer cannot verify the source of the navigation property access</value>
+  </data>
+  <data name="EFLINQ014_MSGFORMAT" xml:space="preserve">
+    <value>Property '{0}' of type '{1}' marked with [NotMapped] accessed within a potential LINQ to Entities expression</value>
+  </data>
+  <data name="EFLINQ014_TITLE" xml:space="preserve">
+    <value>Property marked with [NotMapped] accessed within a potential LINQ to Entities expression</value>
+  </data>
 </root>

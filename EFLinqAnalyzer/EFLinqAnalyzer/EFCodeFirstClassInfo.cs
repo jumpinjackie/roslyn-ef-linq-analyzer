@@ -57,6 +57,13 @@ namespace EFLinqAnalyzer
         public bool IsReadOnly(string name) => _props.ContainsKey(name) && _props[name].SetMethod == null;
 
         /// <summary>
+        /// Returns true if the given property name has a NotMappedAttribute applied
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool IsExplicitlyUnmapped(string name) => _props.ContainsKey(name) && _props[name].GetAttributes().Any(attr => attr.AttributeClass.Name == "NotMappedAttribute");
+
+        /// <summary>
         /// Returns true if the given property has the NotMappedAttribute applied
         /// </summary>
         /// <param name="name"></param>

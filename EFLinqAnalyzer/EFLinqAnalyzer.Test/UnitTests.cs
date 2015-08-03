@@ -626,20 +626,68 @@ namespace EFLinqAnalyzer.Test
         }
 
         [TestMethod]
+        public void EFLINQ013_LinqSelect()
+        {
+            var test = SourceFiles.EFLINQ013_LinqSelect;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ013",
+                    Message = String.Format("Property '{0}' of type '{1}' marked with [NotMapped] accessed within a LINQ to Entities expression", "Unmapped", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 32, 76)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ013",
+                    Message = String.Format("Property '{0}' of type '{1}' marked with [NotMapped] accessed within a LINQ to Entities expression", "Unmapped", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 34, 57)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void EFLINQ013_LinqWhere()
+        {
+            var test = SourceFiles.EFLINQ013_LinqWhere;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ013",
+                    Message = String.Format("Property '{0}' of type '{1}' marked with [NotMapped] accessed within a LINQ to Entities expression", "Unmapped", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 32, 55)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ013",
+                    Message = String.Format("Property '{0}' of type '{1}' marked with [NotMapped] accessed within a LINQ to Entities expression", "Unmapped", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 34, 36)
+                            }
+                });
+        }
+
+        [TestMethod]
         public void UseOfMethodInLinqExpressionTaggedWithDbFunction()
         {
             var test = SourceFiles.UseOfMethodInLinqExpressionTaggedWithDbFunction;
             VerifyCSharpDiagnostic(test);
         }
 
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return null;
-        }
+        protected override CodeFixProvider GetCSharpCodeFixProvider() => null;
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new EFLinqAnalyzerAnalyzer();
-        }
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new EFLinqAnalyzerAnalyzer();
     }
 }

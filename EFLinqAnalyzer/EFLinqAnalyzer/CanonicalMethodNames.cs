@@ -16,7 +16,7 @@ namespace EFLinqAnalyzer
     /// <see cref="https://msdn.microsoft.com/en-us/library/bb738626.aspx"/>
     /// <see cref="https://msdn.microsoft.com/en-us/library/bb738681.aspx"/>
     /// </summary>
-    public class CanonicalMethodNames
+    public static class CanonicalMethodNames
     {
         class PropertyInfo
         {
@@ -213,7 +213,7 @@ namespace EFLinqAnalyzer
         }
 
         static Dictionary<string, string> _types;
-        static Dictionary<string, MethodInfo> _methods;
+        static readonly Dictionary<string, MethodInfo> _methods;
 
         #region Aggregate
         public const string Avg = nameof(Avg);

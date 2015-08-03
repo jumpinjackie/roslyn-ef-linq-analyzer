@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EFLinqAnalyzer
 {
-    public class LinqExpressionValidator
+    public static class LinqExpressionValidator
     {
         /// <summary>
         /// Validates the give lambda to see if it is a valid LINQ to Entities expression
@@ -132,8 +132,6 @@ namespace EFLinqAnalyzer
 
         internal static void ValidateMemberAccessInLinqExpression(MemberAccessExpressionSyntax node, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, Dictionary<string, ContextualLinqParameter> parameterNodes, bool treatAsWarning)
         {
-            bool bValid = true;
-
             var identifier = (node.Expression as IdentifierNameSyntax);
             var memberName = node?.Name;
 
@@ -142,20 +140,21 @@ namespace EFLinqAnalyzer
                 var identText = identifier?.Identifier.ValueText ?? string.Empty;
                 if (!string.IsNullOrEmpty(identText) && parameterNodes.ContainsKey(identText))
                 {
-                    bValid = !(rootQueryableType.IsReadOnly(memberName.Identifier.ValueText));
+                    string propName = memberName.Identifier.ValueText;
+                    if (rootQueryableType.IsReadOnly(propName))
+                    {
+                        var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ005 : DiagnosticCodes.EFLINQ002, node.GetLocation(), memberName.Identifier.ValueText, rootQueryableType.Name);
+                        context.ReportDiagnostic(diagnostic);
+                    }
+                    if (rootQueryableType.IsExplicitlyUnmapped(propName))
+                    {
+                        var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ014 : DiagnosticCodes.EFLINQ013, node.GetLocation(), memberName.Identifier.ValueText, rootQueryableType.Name);
+                        context.ReportDiagnostic(diagnostic);
+                    }
                 }
             }
-
-            if (!bValid)
-            {
-                var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ005 : DiagnosticCodes.EFLINQ002, node.GetLocation(), memberName.Identifier.ValueText, rootQueryableType.Name);
-                context.ReportDiagnostic(diagnostic);
-            }
         }
 
-        private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType, EFUsageContext efContext, SyntaxNodeAnalysisContext context)
-        {
-            return CanonicalMethodNames.IsKnownMethod(node, memberExpr, rootQueryableType, efContext, context);
-        }
+        private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType, EFUsageContext efContext, SyntaxNodeAnalysisContext context) => CanonicalMethodNames.IsKnownMethod(node, memberExpr, rootQueryableType, efContext, context);
     }
 }

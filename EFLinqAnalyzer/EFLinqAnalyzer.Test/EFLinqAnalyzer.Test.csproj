@@ -224,6 +224,12 @@
   <ItemGroup>
     <None Include="Resources\EFLINQ002_LinqSelect_QuerySyntax.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ013_LinqSelect.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ013_LinqWhere.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

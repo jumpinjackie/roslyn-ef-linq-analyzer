@@ -393,5 +393,59 @@ namespace EFLinqAnalyzer {
                 return ResourceManager.GetString("EFLINQ012_TITLE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Any member marked with [NotMapped] is excluded from database mapping, thus inherently un-usuable within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ013_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ013_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property &apos;{0}&apos; of type &apos;{1}&apos; marked with [NotMapped] accessed within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ013_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ013_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property marked with [NotMapped] accessed within a LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ013_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ013_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Any member marked with [NotMapped] is excluded from database mapping, thus inherently un-usuable within a LINQ to Entities expression. This is a warning because the analyzer cannot verify the source of the navigation property access.
+        /// </summary>
+        internal static string EFLINQ014_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ014_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property &apos;{0}&apos; of type &apos;{1}&apos; marked with [NotMapped] accessed within a potential LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ014_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ014_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property marked with [NotMapped] accessed within a potential LINQ to Entities expression.
+        /// </summary>
+        internal static string EFLINQ014_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ014_TITLE", resourceCulture);
+            }
+        }
     }
 }

@@ -13,13 +13,7 @@ namespace EFLinqAnalyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EFLinqAnalyzerAnalyzer : DiagnosticAnalyzer
     {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        {
-            get
-            {
-                return DiagnosticCodes.SupportedDiagnostics;
-            }
-        }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => DiagnosticCodes.SupportedDiagnostics;
 
         public override void Initialize(AnalysisContext context)
         {
@@ -82,7 +76,7 @@ namespace EFLinqAnalyzer
 
                 foreach (var propSym in dbSetProperties)
                 {
-                    INamedTypeSymbol nts = propSym.Type as INamedTypeSymbol;
+                    var nts = propSym.Type as INamedTypeSymbol;
                     if (nts != null)
                     {
                         //Is DbSet<T> where T is the type of our class

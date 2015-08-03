@@ -823,6 +823,68 @@ namespace EFLinqAnalyzer.Test {
         ///using System.Text;
         ///using System.Threading.Tasks;
         ///using System.Diagnostics;
+        ///using System.Data.Entity;
+        ///using System.ComponentModel.DataAnnotations.Schema;
+        ///
+        ///namespace ConsoleApplication1
+        ///{
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///    }
+        ///
+        ///    public class Thing
+        ///    {
+        ///        public string Foo { get; set; }
+        ///        public string Bar { get; set; }
+        ///
+        ///        [NotMapped]
+        ///       [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EFLINQ013_LinqSelect {
+            get {
+                return ResourceManager.GetString("EFLINQ013_LinqSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///using System.Collections.Generic;
+        ///using System.Linq;
+        ///using System.Text;
+        ///using System.Threading.Tasks;
+        ///using System.Diagnostics;
+        ///using System.Data.Entity;
+        ///using System.ComponentModel.DataAnnotations.Schema;
+        ///
+        ///namespace ConsoleApplication1
+        ///{
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///    }
+        ///
+        ///    public class Thing
+        ///    {
+        ///        public string Foo { get; set; }
+        ///        public string Bar { get; set; }
+        ///
+        ///        [NotMapped]
+        ///       [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EFLINQ013_LinqWhere {
+            get {
+                return ResourceManager.GetString("EFLINQ013_LinqWhere", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///using System.Collections.Generic;
+        ///using System.Linq;
+        ///using System.Text;
+        ///using System.Threading.Tasks;
+        ///using System.Diagnostics;
         ///
         ///namespace ConsoleApplication1
         ///{

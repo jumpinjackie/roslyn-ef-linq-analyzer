@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EFLinqAnalyzer
 {
-    public class EFSpecialIdentifiers
+    public static class EFSpecialIdentifiers
     {
         /// <summary>
         /// AsQueryable()

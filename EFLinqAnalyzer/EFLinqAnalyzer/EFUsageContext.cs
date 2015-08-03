@@ -35,9 +35,16 @@ namespace EFLinqAnalyzer
         /// <returns>false if no DbContext or known entity types were discovered, true otherwise</returns>
         public bool Build()
         {
-            //TODO: Can we check if Entity Framework is even referenced? We could just
-            //bail out right here right now if it isn't referenced.
-
+            //Bail immediately if EntityFramework is not referenced
+            if (!_context.SemanticModel
+                         .Compilation
+                         .ReferencedAssemblyNames
+                         .Any(asm => asm.Name == "EntityFramework" 
+                                  && asm.Version.Major == 6))
+            {
+                return false;
+            }
+            
             var typeSymbols = _context.SemanticModel
                                       .LookupSymbols(_context.Node
                                                              .GetLocation()
@@ -77,9 +84,12 @@ namespace EFLinqAnalyzer
                                         .LookupNamespacesAndTypes(et.Locations
                                                                     .First()
                                                                     .SourceSpan
-                                                                    .Start, null, et.Name)
+                                                                    .Start, et.ContainingNamespace, et.Name)
                                         .OfType<INamedTypeSymbol>()
                                         .FirstOrDefault();
+
+                if (clsSymbol == null)
+                    continue;
 
                 var clsSymbols = _context.SemanticModel
                                          .LookupSymbols(clsSymbol.Locations
@@ -96,7 +106,7 @@ namespace EFLinqAnalyzer
 
                 _clsInfo[et] = clsInfo;
             }
-            return true;
+            return _clsInfo.Count > 0;
         }
 
         internal static bool TypeUltimatelyDerivesFromDbContext(ITypeSymbol type)

@@ -1,0 +1,38 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Data.Entity;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ConsoleApplication1
+{
+    public class MyContext : DbContext
+    {
+        public DbSet<Thing> Things { get; set; }
+    }
+
+    public class Thing
+    {
+        public string Foo { get; set; }
+        public string Bar { get; set; }
+
+        [NotMapped]
+        public string Unmapped { get; set; }
+    }
+
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            using (var context = new MyContext())
+            {
+                var items = context.Things.Select(t => new { t.Foo, t.Bar, t.Unmapped });
+                var items2 = from t in context.Things
+                             select new { t.Foo, t.Bar, t.Unmapped };
+            }
+        }
+    }
+}

@@ -17,18 +17,12 @@ namespace TestHelper
         /// <summary>
         /// Get the CSharp analyzer being tested - to be implemented in non-abstract class
         /// </summary>
-        protected virtual DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return null;
-        }
+        protected virtual DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => null;
 
         /// <summary>
         /// Get the Visual Basic analyzer being tested (C#) - to be implemented in non-abstract class
         /// </summary>
-        protected virtual DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
-        {
-            return null;
-        }
+        protected virtual DiagnosticAnalyzer GetBasicDiagnosticAnalyzer() => null;
         #endregion
 
         #region Verifier wrappers
