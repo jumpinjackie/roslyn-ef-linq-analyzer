@@ -14,7 +14,7 @@ namespace ContosoUniversity.Controllers
 {
     public class CourseController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private readonly SchoolContext db = new SchoolContext();
 
         // GET: Course
         public ActionResult Index(int? SelectedDepartment)
@@ -153,10 +153,7 @@ namespace ContosoUniversity.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult UpdateCourseCredits()
-        {
-            return View();
-        }
+        public ActionResult UpdateCourseCredits() => View();
 
         [HttpPost]
         public ActionResult UpdateCourseCredits(int? multiplier)

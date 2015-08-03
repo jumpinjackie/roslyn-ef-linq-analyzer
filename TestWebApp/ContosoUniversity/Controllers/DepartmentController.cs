@@ -15,7 +15,7 @@ namespace ContosoUniversity.Controllers
 {
     public class DepartmentController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private readonly SchoolContext db = new SchoolContext();
 
         // GET: Department
         public async Task<ActionResult> Index()
@@ -94,7 +94,7 @@ namespace ContosoUniversity.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int? id, byte[] rowVersion)
         {
-            string[] fieldsToBind = new string[] { "Name", "Budget", "StartDate", "InstructorID", "RowVersion" };
+            var fieldsToBind = new string[] { "Name", "Budget", "StartDate", "InstructorID", "RowVersion" };
 
             if (id == null)
             {
@@ -104,7 +104,7 @@ namespace ContosoUniversity.Controllers
             var departmentToUpdate = await db.Departments.FindAsync(id);
             if (departmentToUpdate == null)
             {
-                Department deletedDepartment = new Department();
+                var deletedDepartment = new Department();
                 TryUpdateModel(deletedDepartment, fieldsToBind);
                 ModelState.AddModelError(string.Empty,
                     "Unable to save changes. The department was deleted by another user.");

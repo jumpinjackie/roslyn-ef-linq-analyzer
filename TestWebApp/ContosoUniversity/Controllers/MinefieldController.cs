@@ -10,6 +10,7 @@ using System.Web.Mvc;
 
 namespace ContosoUniversity.Controllers
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Common Practices and Code Improvements", "RECS0063:Warns when a culture-aware 'StartsWith' call is used by default.", Justification = "False positive: Not applicable within a LINQ to Entities expression")]
     public class MinefieldController : Controller
     {
         private SchoolContext db = new SchoolContext();
@@ -284,7 +285,7 @@ namespace ContosoUniversity.Controllers
             }
             return View("QueryResult", vm);
         }
-
+        
         public ActionResult WhereWithInterpolatedString_EMS()
         {
             var vm = new QueryResultViewModel<StudentDisplay>();

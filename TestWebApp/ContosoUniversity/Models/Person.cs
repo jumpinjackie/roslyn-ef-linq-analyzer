@@ -18,6 +18,7 @@ namespace ContosoUniversity.Models
         public string FirstMidName { get; set; }
 
         [Display(Name = "Full Name")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Language", "CSE0003:Use expression-bodied members", Justification = "Needs to stay to exercise EF LINQ analyzer")]
         public string FullName
         {
             get

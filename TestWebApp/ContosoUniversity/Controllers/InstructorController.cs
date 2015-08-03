@@ -15,7 +15,7 @@ namespace ContosoUniversity.Controllers
 {
     public class InstructorController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private readonly SchoolContext db = new SchoolContext();
 
         // GET: Instructor
         public ActionResult Index(int? id, int? courseID)
@@ -30,8 +30,7 @@ namespace ContosoUniversity.Controllers
             if (id != null)
             {
                 ViewBag.InstructorID = id.Value;
-                viewModel.Courses = viewModel.Instructors.Where(
-                    i => i.ID == id.Value).Single().Courses;
+                viewModel.Courses = viewModel.Instructors.Single(i => i.ID == id.Value).Courses;
             }
 
             if (courseID != null)
@@ -41,7 +40,7 @@ namespace ContosoUniversity.Controllers
                 //viewModel.Enrollments = viewModel.Courses.Where(
                 //    x => x.CourseID == courseID).Single().Enrollments;
                 // Explicit loading
-                var selectedCourse = viewModel.Courses.Where(x => x.CourseID == courseID).Single();
+                var selectedCourse = viewModel.Courses.Single(x => x.CourseID == courseID);
                 db.Entry(selectedCourse).Collection(x => x.Enrollments).Load();
                 foreach (Enrollment enrollment in selectedCourse.Enrollments)
                 {
