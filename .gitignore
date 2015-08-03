@@ -11,3 +11,8 @@
 /TestApplication/bin
 /TestCaseScratchPad/obj
 /TestCaseScratchPad/bin
+/TestWebApp/.vs
+/TestWebApp/packages
+/TestWebApp/ContosoUniversity/obj
+/TestWebApp/ContosoUniversity/App_Data
+/TestWebApp/ContosoUniversity/bin
