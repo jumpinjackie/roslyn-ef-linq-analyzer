@@ -8,7 +8,7 @@ Introduction
 Entity Framework, while being a solid data access framework is laden with many gotchas that make your application prone to:
 
  * Poor query performance due to improperly constructed queries
- * Hitting into runtime exceptions because your LINQ queries while syntactically valid, cannot be translated into valid SQL by Entity Framework.
+ * Hitting into runtime exceptions because your LINQ queries while syntactically valid C# code, cannot be translated into valid SQL by Entity Framework at runtime.
 
 While profiling tools can help with the former, nothing much can help with the latter besides knowledge, experience and discipline ... until now.
 
