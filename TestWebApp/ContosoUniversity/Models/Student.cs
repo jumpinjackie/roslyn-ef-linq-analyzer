@@ -13,5 +13,13 @@ namespace ContosoUniversity.Models
         public DateTime EnrollmentDate { get; set; }
 
         public virtual ICollection<Enrollment> Enrollments { get; set; }
+
+        [NotMapped]
+        public string Unmapped
+        {
+            get { return Guid.NewGuid().ToString(); }
+        }
+        
+        public string FullNameExpr => LastName + ", " + FirstMidName;
     }
 }

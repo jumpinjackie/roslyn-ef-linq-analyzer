@@ -1,0 +1,33 @@
+﻿@model ContosoUniversity.ViewModels.QueryResultViewModel<ContosoUniversity.ViewModels.StudentDisplay>
+@{
+    ViewBag.Title = "Query Results";
+}
+@if (Model.Exception != null)
+{
+    <div class="alert alert-danger">
+        <h3>Oops. Guess we hit an Entity Framework minefield!</h3>
+        <p><pre>@Model.Exception.ToString()</pre></p>
+    </div>
+}
+else
+{
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Full Name</th>
+            <th>Enrollment Date</th>
+        </tr>
+        @foreach (var student in Model.Results)
+        {
+        <tr>
+            <td>@student.ID</td>
+            <td>@student.FirstMidName</td>
+            <td>@student.LastName</td>
+            <td>@student.FullName</td>
+            <td>@student.EnrollmentDate</td>
+        </tr>
+        }
+    </table>
+}

@@ -1,0 +1,14 @@
+﻿@model ContosoUniversity.ViewModels.MinefieldViewModel
+@{
+    ViewBag.Title = "LINQ Minefield";
+}
+
+<div class="jumbotron">
+    <h1>LINQ Minefield</h1>
+</div>
+<ul>
+    @foreach (var link in Model.Links)
+    {
+        <li>@Html.ActionLink(link.Label, link.ActionName, link.ControllerName)</li>
+    }
+</ul>
