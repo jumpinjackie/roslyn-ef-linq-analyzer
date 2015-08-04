@@ -133,63 +133,58 @@ namespace EFLinqAnalyzer
                         var memberExpr = invoc.Expression as MemberAccessExpressionSyntax;
                         if (memberExpr != null)
                         {
-                            switch (memberExpr?.Name?.Identifier.ValueText)
+                            if (CanonicalMethodNames.IsLinqOperator(memberExpr?.Name?.Identifier.ValueText))
                             {
-                                case CanonicalMethodNames.LinqOperators.Select:
-                                case CanonicalMethodNames.LinqOperators.Where:
+                                var si = context.SemanticModel.GetSymbolInfo(memberExpr.Expression);
+
+                                var lts = si.Symbol as ILocalSymbol;
+                                var pts = si.Symbol as IPropertySymbol;
+                                //Is this method called on a property?
+                                if (pts != null)
+                                {
+                                    var nts = pts.Type as INamedTypeSymbol;
+                                    if (nts != null)
                                     {
-                                        var si = context.SemanticModel.GetSymbolInfo(memberExpr.Expression);
-
-                                        var lts = si.Symbol as ILocalSymbol;
-                                        var pts = si.Symbol as IPropertySymbol;
-                                        //Is this method called on a property?
-                                        if (pts != null)
+                                        //Like a DbSet<T>?
+                                        if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
                                         {
-                                            var nts = pts.Type as INamedTypeSymbol;
-                                            if (nts != null)
+                                            //That is part of a class derived from DbContext?
+                                            if (pts?.ContainingType?.BaseType?.Name == EFSpecialIdentifiers.DbContext)
                                             {
-                                                //Like a DbSet<T>?
-                                                if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
-                                                {
-                                                    //That is part of a class derived from DbContext?
-                                                    if (pts?.ContainingType?.BaseType?.Name == EFSpecialIdentifiers.DbContext)
-                                                    {
-                                                        var typeArg = nts.TypeArguments[0];
-                                                        //Let's give our method some assistance, by checking what T actually is
-                                                        var clsInfo = efContext.GetClassInfo(typeArg);
-                                                        if (clsInfo != null)
-                                                        {
-                                                            //Okay now let's see if this lambda is valid in the EF context
-                                                            LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        else if (lts != null) //The linq method was called on a local variable
-                                        {
-                                            var nts = lts.Type as INamedTypeSymbol;
-                                            if (nts != null && nts.TypeArguments.Length == 1)
-                                            {
-                                                //This is some generic type with one type argument
                                                 var typeArg = nts.TypeArguments[0];
+                                                //Let's give our method some assistance, by checking what T actually is
                                                 var clsInfo = efContext.GetClassInfo(typeArg);
-                                                if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
+                                                if (clsInfo != null)
                                                 {
-                                                    //TODO: Should still actually check that it is ultimately assigned
-                                                    //from a DbSet<T> property of a DbContext derived class
-
+                                                    //Okay now let's see if this lambda is valid in the EF context
                                                     LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
-                                                }
-                                                else if (nts.MetadataName == EFSpecialIdentifiers.IQueryable)
-                                                {
-                                                    bool treatAsWarning = !LinqExpressionValidator.LocalIQueryableVarCanBeTracedBackToDbContext(lts, context, efContext, clsInfo);
-                                                    LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning);
                                                 }
                                             }
                                         }
                                     }
-                                    break;
+                                }
+                                else if (lts != null) //The linq method was called on a local variable
+                                {
+                                    var nts = lts.Type as INamedTypeSymbol;
+                                    if (nts != null && nts.TypeArguments.Length == 1)
+                                    {
+                                        //This is some generic type with one type argument
+                                        var typeArg = nts.TypeArguments[0];
+                                        var clsInfo = efContext.GetClassInfo(typeArg);
+                                        if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
+                                        {
+                                            //TODO: Should still actually check that it is ultimately assigned
+                                            //from a DbSet<T> property of a DbContext derived class
+
+                                            LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
+                                        }
+                                        else if (nts.MetadataName == EFSpecialIdentifiers.IQueryable)
+                                        {
+                                            bool treatAsWarning = !LinqExpressionValidator.LocalIQueryableVarCanBeTracedBackToDbContext(lts, context, efContext, clsInfo);
+                                            LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

@@ -157,7 +157,7 @@ namespace EFLinqAnalyzer
                         //The variable inside our LINQ sub-operator is a Func<T, bool> where T
                         //is a known entity type
                         if (type != null &&
-                            type.MetadataName == "Func`2" &&
+                            type.MetadataName == $"{EFSpecialIdentifiers.Func}`2" &&
                             efContext.GetClassInfo(type.TypeArguments[0]) != null &&
                             type.TypeArguments[1].MetadataName == EFSpecialIdentifiers.Boolean)
                         {
@@ -183,6 +183,7 @@ namespace EFLinqAnalyzer
                 var identText = identifier?.Identifier.ValueText ?? string.Empty;
                 if (!string.IsNullOrEmpty(identText) && parameterNodes.ContainsKey(identText))
                 {
+                    //TODO: Properties of explicit interface implementations. Does EF recognize these or not?
                     string propName = memberName.Identifier.ValueText;
                     if (rootQueryableType.IsReadOnly(propName))
                     {
