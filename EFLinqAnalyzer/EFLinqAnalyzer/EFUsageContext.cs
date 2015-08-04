@@ -59,15 +59,28 @@ namespace EFLinqAnalyzer
             if (_dbContextSymbols.Count == 0)
                 return false;
 
+            //TODO: Need to follow any related types that hang off of the primary entities (referenced via DbSet<T>)
             var entityTypes = _dbContextSymbols.SelectMany(dbc =>
             {
-                var dbSetProps = _context.SemanticModel
-                                         .LookupSymbols(dbc.Locations
-                                                           .First()
-                                                           .SourceSpan
-                                                           .Start, dbc)
-                                         .OfType<IPropertySymbol>()
-                                         .Where(t => t.Type.MetadataName == "DbSet`1");
+                var dbSetProps = dbc.Locations.SelectMany(loc =>
+                {
+                    IEnumerable<IPropertySymbol> propSyms = null;
+                    try
+                    {
+                        //TODO: Guard against out of bounds symbol search, right now it's
+                        //brace for impact
+                        var syms = _context.SemanticModel
+                                           .LookupSymbols(loc.SourceSpan.Start, dbc);
+
+                        propSyms = syms.OfType<IPropertySymbol>()
+                                       .Where(t => t.Type.MetadataName == "DbSet`1");
+                    }
+                    catch
+                    {
+                        propSyms = Enumerable.Empty<IPropertySymbol>();
+                    }
+                    return propSyms;
+                }).Distinct();
                 return dbSetProps;
             })
             .Select(t => t.Type as INamedTypeSymbol)
@@ -80,22 +93,42 @@ namespace EFLinqAnalyzer
             _propertiesToCls = new Dictionary<string, List<EFCodeFirstClassInfo>>();
             foreach (var et in _entityTypeSymbols)
             {
-                var clsSymbol = _context.SemanticModel
-                                        .LookupNamespacesAndTypes(et.Locations
-                                                                    .First()
-                                                                    .SourceSpan
-                                                                    .Start, et.ContainingNamespace, et.Name)
-                                        .OfType<INamedTypeSymbol>()
-                                        .FirstOrDefault();
+                var ns = et.ContainingNamespace;
+                var clsSymbol = et.Locations.SelectMany(loc =>
+                {
+                    //TODO: Don't lookup if our span is out of bounds
+                    IEnumerable<INamedTypeSymbol> syms = null;
+                    try
+                    {
+                        syms = _context.SemanticModel
+                                       .LookupNamespacesAndTypes(loc.SourceSpan.Start, ns, et.Name)
+                                       .OfType<INamedTypeSymbol>();
+                    }
+                    catch
+                    {
+                        syms = Enumerable.Empty<INamedTypeSymbol>();
+                    }
+                    return syms;
+                }).Distinct().FirstOrDefault();
 
                 if (clsSymbol == null)
                     continue;
 
-                var clsSymbols = _context.SemanticModel
-                                         .LookupSymbols(clsSymbol.Locations
-                                                                 .First()
-                                                                 .SourceSpan
-                                                                 .Start, clsSymbol);
+                var clsSymbols = clsSymbol.Locations.SelectMany(loc =>
+                {
+                    //TODO: Don't lookup if our span is out of bounds
+                    IEnumerable<ISymbol> syms = null;
+                    try
+                    {
+                        syms = _context.SemanticModel
+                                       .LookupSymbols(loc.SourceSpan.Start, clsSymbol);
+                    }
+                    catch
+                    {
+                        syms = Enumerable.Empty<ISymbol>();
+                    }
+                    return syms;
+                }).Distinct();
 
                 var clsInfo = new EFCodeFirstClassInfo(clsSymbol);
                 clsInfo.AddProperties(clsSymbols.OfType<IPropertySymbol>(), (sym) => {
