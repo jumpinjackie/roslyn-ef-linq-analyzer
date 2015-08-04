@@ -230,15 +230,11 @@ namespace EFLinqAnalyzer
             }
         }
 
-        private static void AnalyzeQueryExpression(SyntaxNodeAnalysisContext context, EFUsageContext efContext, QueryExpressionSyntax query)
+        static EFCodeFirstClassInfo GetQueryableEntityType(ExpressionSyntax expr, SyntaxNodeAnalysisContext context, EFUsageContext efContext)
         {
-            //I can't believe how much easier this is compared to Extension Method syntax! Then again
-            //query syntax does mean its own dedicated set of C# keywords, which would means its own 
-            //dedicated set of syntax node types
-
-            //First item on checklist, find out our root queryable
-            var memberExpr = query.FromClause.Expression as MemberAccessExpressionSyntax;
-            if (memberExpr != null) // from $var in $ident.$prop
+            // from $var in ??? 
+            var memberExpr = expr as MemberAccessExpressionSyntax;
+            if (memberExpr != null) //??? = $ident.$prop
             {
                 var ident = memberExpr.Expression as IdentifierNameSyntax;
                 var prop = memberExpr.Name;
@@ -260,25 +256,37 @@ namespace EFLinqAnalyzer
                                 if (nts != null)
                                 {
                                     var typeArg = nts.TypeArguments[0];
-                                    var cls = efContext.GetClassInfo(typeArg);
-                                    if (cls != null)
-                                    {
-                                        bool treatAsWarning = false;
-
-                                        var paramNodes = new Dictionary<string, ContextualLinqParameter>();
-                                        var fromVar = new ContextualLinqParameter(query.FromClause.Identifier);
-                                        paramNodes[fromVar.Name] = fromVar;
-                                        var descendants = query.Body.DescendantNodes();
-                                        var memberAccesses = descendants.OfType<MemberAccessExpressionSyntax>();
-                                        foreach (var access in memberAccesses)
-                                        {
-                                            LinqExpressionValidator.ValidateMemberAccessInLinqExpression(access, cls, context, paramNodes, treatAsWarning);
-                                        }
-                                    }
+                                    return efContext.GetClassInfo(typeArg);
                                 }
                             }
                         }
                     }
+                }
+            }
+            return null;
+        }
+
+        private static void AnalyzeQueryExpression(SyntaxNodeAnalysisContext context, EFUsageContext efContext, QueryExpressionSyntax query)
+        {
+            //I can't believe how much easier this is compared to Extension Method syntax! Then again
+            //query syntax does mean its own dedicated set of C# keywords, which would means its own 
+            //dedicated set of syntax node types
+
+
+            //First item on checklist, find out our root queryable
+            var cls = GetQueryableEntityType(query.FromClause.Expression, context, efContext);
+            if (cls != null)
+            {
+                bool treatAsWarning = false;
+
+                var paramNodes = new Dictionary<string, ContextualLinqParameter>();
+                var fromVar = new ContextualLinqParameter(query.FromClause.Identifier);
+                paramNodes[fromVar.Name] = fromVar;
+                var descendants = query.Body.DescendantNodes();
+                var memberAccesses = descendants.OfType<MemberAccessExpressionSyntax>();
+                foreach (var access in memberAccesses)
+                {
+                    LinqExpressionValidator.ValidateMemberAccessInLinqExpression(access, cls, context, paramNodes, treatAsWarning);
                 }
             }
         }

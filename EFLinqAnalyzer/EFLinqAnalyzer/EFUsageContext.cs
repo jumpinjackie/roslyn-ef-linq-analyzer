@@ -67,8 +67,8 @@ namespace EFLinqAnalyzer
                     IEnumerable<IPropertySymbol> propSyms = null;
                     try
                     {
-                        //TODO: Guard against out of bounds symbol search, right now it's
-                        //brace for impact
+                        //TODO: Guard against out of bounds symbol search (partial classes known
+                        //to cause this case), right now it's brace for impact
                         var syms = _context.SemanticModel
                                            .LookupSymbols(loc.SourceSpan.Start, dbc);
 
@@ -96,7 +96,8 @@ namespace EFLinqAnalyzer
                 var ns = et.ContainingNamespace;
                 var clsSymbol = et.Locations.SelectMany(loc =>
                 {
-                    //TODO: Don't lookup if our span is out of bounds
+                    //TODO: Guard against out of bounds symbol search (partial classes known
+                    //to cause this case), right now it's brace for impact
                     IEnumerable<INamedTypeSymbol> syms = null;
                     try
                     {
@@ -116,7 +117,8 @@ namespace EFLinqAnalyzer
 
                 var clsSymbols = clsSymbol.Locations.SelectMany(loc =>
                 {
-                    //TODO: Don't lookup if our span is out of bounds
+                    //TODO: Guard against out of bounds symbol search (partial classes known
+                    //to cause this case), right now it's brace for impact
                     IEnumerable<ISymbol> syms = null;
                     try
                     {
