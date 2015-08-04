@@ -19,7 +19,10 @@ namespace UnitTest
     {
         static IQueryable<Thing> GetThings(MyContext context)
         {
-            return context.Things;
+            if (new Random().Next() % 2 == 0)
+                return Enumerable.Empty<Thing>().AsQueryable();
+            else
+                return context.Things;
         }
 
         public static void Main(string[] args)

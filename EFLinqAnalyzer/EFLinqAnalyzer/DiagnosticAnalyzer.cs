@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace EFLinqAnalyzer
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class EFLinqAnalyzerAnalyzer : DiagnosticAnalyzer
+    public class EFLinqAnalyzer : DiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => DiagnosticCodes.SupportedDiagnostics;
 
@@ -65,7 +65,7 @@ namespace EFLinqAnalyzer
             var symbols = context.SemanticModel
                                  .LookupSymbols(classType.Identifier.Span.Start + 1)
                                  .OfType<ITypeSymbol>()
-                                 .Where(t => EFUsageContext.TypeUltimatelyDerivesFromDbContext(t));
+                                 .Where(t => t.UltimatelyDerivesFromDbContext());
             
             foreach (var clsSym in symbols)
             {
@@ -173,24 +173,18 @@ namespace EFLinqAnalyzer
                                             {
                                                 //This is some generic type with one type argument
                                                 var typeArg = nts.TypeArguments[0];
+                                                var clsInfo = efContext.GetClassInfo(typeArg);
                                                 if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
                                                 {
                                                     //TODO: Should still actually check that it is ultimately assigned
                                                     //from a DbSet<T> property of a DbContext derived class
 
-                                                    var clsInfo = efContext.GetClassInfo(typeArg);
-                                                    if (clsInfo != null)
-                                                    {
-                                                        LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
-                                                    }
+                                                    LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
                                                 }
                                                 else if (nts.MetadataName == EFSpecialIdentifiers.IQueryable)
                                                 {
-                                                    var clsInfo = efContext.GetClassInfo(typeArg);
-                                                    if (clsInfo != null)
-                                                    {
-                                                        LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning: true);
-                                                    }
+                                                    bool treatAsWarning = !LinqExpressionValidator.LocalIQueryableVarCanBeTracedBackToDbContext(lts, context, efContext, clsInfo);
+                                                    LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning);
                                                 }
                                             }
                                         }
@@ -244,8 +238,8 @@ namespace EFLinqAnalyzer
         private static void AnalyzeQueryExpression(SyntaxNodeAnalysisContext context, EFUsageContext efContext, QueryExpressionSyntax query)
         {
             //I can't believe how much easier this is compared to Extension Method syntax! Then again
-            //query syntax does mean its own dedicated set of C# keywords, which would means its dedicate
-            //set of syntax node types
+            //query syntax does mean its own dedicated set of C# keywords, which would means its own 
+            //dedicated set of syntax node types
 
             //First item on checklist, find out our root queryable
             var memberExpr = query.FromClause.Expression as MemberAccessExpressionSyntax;

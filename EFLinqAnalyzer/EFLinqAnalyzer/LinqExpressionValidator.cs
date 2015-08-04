@@ -198,6 +198,93 @@ namespace EFLinqAnalyzer
             }
         }
 
+        internal static bool LocalIQueryableVarCanBeTracedBackToDbContext(ILocalSymbol lts, SyntaxNodeAnalysisContext context, EFUsageContext efContext, EFCodeFirstClassInfo clsInfo)
+        {
+            bool bTraced = false;
+
+            var assignments = lts.DeclaringSyntaxReferences
+                                 .Where(decl => decl.GetSyntax()?.Kind() == SyntaxKind.EqualsValueClause)
+                                 .Cast<EqualsValueClauseSyntax>()
+                                 .Concat(lts.DeclaringSyntaxReferences.SelectMany(decl => decl.GetSyntax()?.DescendantNodes().OfType<EqualsValueClauseSyntax>()));
+            
+            //Find applicable assignments where:
+            //var myVar = $SOME_EXPR;
+            var applicableAssignments = assignments.Select(asn => asn.Parent)
+                                                   .OfType<VariableDeclaratorSyntax>()
+                                                   .Where(decl => decl.Identifier.ValueText == lts.Name);
+
+            if (applicableAssignments.Any())
+            {
+                //Check what the RHS is
+                foreach (var asn in applicableAssignments)
+                {
+                    var eq = asn.DescendantNodes()
+                                .OfType<EqualsValueClauseSyntax>()
+                                .FirstOrDefault();
+                    if (eq != null)
+                    {
+                        switch (eq.Value.Kind())
+                        {
+                            //var myVar = $SOME_METHOD()
+                            case SyntaxKind.InvocationExpression:
+                                {
+                                    var invoc = (InvocationExpressionSyntax)eq.Value;
+                                    var method = invoc.Expression as IdentifierNameSyntax;
+                                    if (method != null)
+                                    {
+                                        return DoesMethodReturnDbSet(method, context, efContext, clsInfo);
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return bTraced;
+        }
+
+        private static bool ReturnStatementTracesBackToDbSet(ReturnStatementSyntax ret, SyntaxNodeAnalysisContext context, EFCodeFirstClassInfo clsInfo)
+        {
+            var expr = ret.Expression;
+            var kind = expr.Kind();
+            //TODO: There are many more cases to handle, so just handle them as the cases arise
+            switch (kind)
+            {
+                case SyntaxKind.SimpleMemberAccessExpression: //return $a.$b
+                    {
+                        var sma = (MemberAccessExpressionSyntax)expr;
+                        //Is $a some DbContext?
+                        if (sma.Expression.IsDbContextInstance(context) && 
+                            sma.Name.Kind() == SyntaxKind.IdentifierName)
+                        {
+                            var si = context.SemanticModel.GetSymbolInfo(sma.Name);
+                            if (si.Symbol != null)
+                            {
+                                var type = si.Symbol.TryGetType() as INamedTypeSymbol;
+                                //Should be DbSet<T>, but let's just verify
+                                if (type?.MetadataName == EFSpecialIdentifiers.DbSet)
+                                {
+                                    //T is our type
+                                    if (clsInfo?.ClassType == type.TypeArguments[0])
+                                        return true;
+                                }
+                            }
+                        }
+                    }
+                    break;
+            }
+            return false;
+        }
+
+        private static bool DoesMethodReturnDbSet(IdentifierNameSyntax methodIdent, SyntaxNodeAnalysisContext context, EFUsageContext efContext, EFCodeFirstClassInfo clsInfo)
+        {
+            var method = methodIdent.GetDeclaringMethod(context);
+            var returnStatements = method.DescendantNodes().OfType<ReturnStatementSyntax>();
+            //It has to be all so that we can be conclusive that all points of return a DbSet<T>
+            return returnStatements.All(ret => ReturnStatementTracesBackToDbSet(ret, context, clsInfo));
+        }
+
         private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType, EFUsageContext efContext, SyntaxNodeAnalysisContext context) => CanonicalMethodNames.IsKnownMethod(node, memberExpr, rootQueryableType, efContext, context);
     }
 }

@@ -52,7 +52,7 @@ namespace EFLinqAnalyzer
                                                              .Start)
                                       .OfType<INamedTypeSymbol>();
 
-            var symbols = typeSymbols.Where(t => TypeUltimatelyDerivesFromDbContext(t));
+            var symbols = typeSymbols.Where(t => t.UltimatelyDerivesFromDbContext());
 
             _dbContextSymbols = new ReadOnlyCollection<INamedTypeSymbol>(symbols.ToList());
 
@@ -73,7 +73,7 @@ namespace EFLinqAnalyzer
                                            .LookupSymbols(loc.SourceSpan.Start, dbc);
 
                         propSyms = syms.OfType<IPropertySymbol>()
-                                       .Where(t => t.Type.MetadataName == "DbSet`1");
+                                       .Where(t => t.Type.MetadataName == EFSpecialIdentifiers.DbSet);
                     }
                     catch
                     {
@@ -140,20 +140,6 @@ namespace EFLinqAnalyzer
                 _clsInfo[et] = clsInfo;
             }
             return _clsInfo.Count > 0;
-        }
-
-        internal static bool TypeUltimatelyDerivesFromDbContext(ITypeSymbol type)
-        {
-            //Walk up the inheritance chain until we encounter DbContext or null (ie. We're at System.Object)
-            var bt = type.BaseType;
-            while (bt != null)
-            {
-                if (bt.Name == "DbContext")
-                    return true;
-
-                bt = bt.BaseType;
-            }
-            return false;
         }
 
         /// <summary>

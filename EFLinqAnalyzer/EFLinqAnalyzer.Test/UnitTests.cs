@@ -471,7 +471,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 41, 47)
+                                new DiagnosticResultLocation("Test0.cs", 44, 47)
                             }
                 },
                 new DiagnosticResult
@@ -481,7 +481,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 42, 48)
+                                new DiagnosticResultLocation("Test0.cs", 45, 48)
                             }
                 });
         }
@@ -518,7 +518,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 41, 68)
+                                new DiagnosticResultLocation("Test0.cs", 44, 68)
                             }
                 },
                 new DiagnosticResult
@@ -528,7 +528,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 41, 78)
+                                new DiagnosticResultLocation("Test0.cs", 44, 78)
                             }
                 });
         }
@@ -545,7 +545,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 39, 78)
+                                new DiagnosticResultLocation("Test0.cs", 42, 78)
                             }
                 });
         }
@@ -586,7 +586,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 60, 63)
+                                new DiagnosticResultLocation("Test0.cs", 63, 63)
                             }
                 });
         }
@@ -620,7 +620,7 @@ namespace EFLinqAnalyzer.Test
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] {
-                                new DiagnosticResultLocation("Test0.cs", 30, 69)
+                                new DiagnosticResultLocation("Test0.cs", 33, 69)
                             }
                 });
         }
@@ -688,6 +688,6 @@ namespace EFLinqAnalyzer.Test
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => null;
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new EFLinqAnalyzerAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new EFLinqAnalyzer();
     }
 }
