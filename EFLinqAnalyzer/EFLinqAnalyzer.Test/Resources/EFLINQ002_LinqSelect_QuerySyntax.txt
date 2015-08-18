@@ -28,6 +28,11 @@ namespace UnitTest
                 var items = from t in context.Things
                             where t.Name == "Huh?"
                             select new { t.Id, t.Name, t.Foo, t.Bar };
+
+                IQueryable<Thing> things = context.Things;
+                var items2 = from t in things
+                             where t.Name == "Huh?"
+                             select new { t.Id, t.Name, t.Foo, t.Bar };
             }
         }
     }

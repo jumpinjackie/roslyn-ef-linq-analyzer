@@ -29,6 +29,12 @@ namespace UnitTest
                             where t.Bar == "Whatever" ||
                                   t.Foo == "Huh?" 
                             select t;
+
+                IQueryable<Thing> things = context.Things;
+                var items2 = from t in things
+                             where t.Bar == "Whatever" ||
+                                   t.Foo == "Huh?" 
+                             select t;
             }
         }
     }
