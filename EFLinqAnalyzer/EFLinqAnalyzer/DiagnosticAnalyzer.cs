@@ -273,9 +273,7 @@ namespace EFLinqAnalyzer
             {
                 bool treatAsWarning = !isConnectedToDbContext;
 
-                var paramNodes = new Dictionary<string, ContextualLinqParameter>();
-                var fromVar = new ContextualLinqParameter(query.FromClause.Identifier);
-                paramNodes[fromVar.Name] = fromVar;
+                var paramNodes = ContextualLinqParameter.BuildContext(query, context, efContext);
                 var descendants = query.Body.DescendantNodes();
 
                 LinqExpressionValidator.ValidateLinqToEntitiesUsageInSyntaxNodes(descendants, cls, context, efContext, paramNodes, treatAsWarning);

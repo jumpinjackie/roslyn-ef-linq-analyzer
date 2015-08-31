@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Data.Entity;
+
+namespace ConsoleApplication1
+{
+    public class MyContext : DbContext
+    {
+        public DbSet<NotAThing> NotThings { get; set; }
+
+        public DbSet<Thing> Things { get; set; }
+
+        public DbSet<Sprocket> Sprockets { get; set; }
+    }
+
+    public class Thing
+    {
+        public int Id { get; set; }
+        public string Foo { get; set; }
+        public string Bar { get; set; }
+        public virtual ICollection<Sprocket> Sprockets { get; set; }
+    }
+
+    public class Sprocket
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int? ThingId { get; set; }
+        public virtual Thing Thing { get; set; }
+    }
+
+    public class NotAThing
+    {
+        public int Id { get; set; }
+        public virtual ICollection<Sprocket> Sprockets { get; set; }
+    }
+
+    class Program
+    {
+        static bool FooIsBar(string foo, string bar)
+        {
+            return foo == bar;
+        }
+        
+        public static void Main(string[] args)
+        {
+            using (var context = new MyContext())
+            {
+                Func<Sprocket, bool> predicate = s => s.Name == "Ssdkfjd";
+                var items = from t in context.Things
+                            where t.Sprockets.Any(predicate)
+                            select t;
+            }
+        }
+    }
+}

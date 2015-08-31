@@ -632,6 +632,23 @@ namespace EFLinqAnalyzer.Test
         }
 
         [TestMethod]
+        public void EFLINQ008_QuerySyntax()
+        {
+            var test = SourceFiles.EFLINQ008_QuerySyntax;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ008",
+                    Message = String.Format("Navigation property '{0}' of type '{1}' within LINQ to Entities expression is not queryable", "Sprockets", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 55, 37)
+                            }
+                });
+        }
+
+        [TestMethod]
         public void EFLINQ011_LinqSelect()
         {
             var test = SourceFiles.EFLINQ011_LinqSelect;

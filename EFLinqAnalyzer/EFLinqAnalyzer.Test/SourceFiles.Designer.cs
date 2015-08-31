@@ -745,6 +745,37 @@ namespace EFLinqAnalyzer.Test {
         ///        public int Id { get; set; }
         ///        pu [rest of string was truncated]&quot;;.
         /// </summary>
+        internal static string EFLINQ008_QuerySyntax {
+            get {
+                return ResourceManager.GetString("EFLINQ008_QuerySyntax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///using System.Collections.Generic;
+        ///using System.Linq;
+        ///using System.Text;
+        ///using System.Threading.Tasks;
+        ///using System.Diagnostics;
+        ///using System.Data.Entity;
+        ///
+        ///namespace ConsoleApplication1
+        ///{
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;NotAThing&gt; NotThings { get; set; }
+        ///
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///
+        ///        public DbSet&lt;Sprocket&gt; Sprockets { get; set; }
+        ///    }
+        ///
+        ///    public class Thing
+        ///    {
+        ///        public int Id { get; set; }
+        ///        pu [rest of string was truncated]&quot;;.
+        /// </summary>
         internal static string EFLINQ009_LinqWhere {
             get {
                 return ResourceManager.GetString("EFLINQ009_LinqWhere", resourceCulture);

@@ -237,6 +237,9 @@
   <ItemGroup>
     <None Include="Resources\EFLINQ016_IndirectDbSet.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ008_QuerySyntax.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

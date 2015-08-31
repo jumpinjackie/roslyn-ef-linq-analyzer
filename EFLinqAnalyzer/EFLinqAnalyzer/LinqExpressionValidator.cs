@@ -23,8 +23,7 @@ namespace EFLinqAnalyzer
         public static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, EFUsageContext efContext, bool treatAsWarning = false)
         {
             var descendants = lambda.DescendantNodes();
-            var parameterNodes = descendants.OfType<ParameterSyntax>()
-                                            .ToDictionary(p => p.Identifier.ValueText, p => new ContextualLinqParameter(p));
+            var parameterNodes = ContextualLinqParameter.BuildContext(descendants.OfType<ParameterSyntax>(), context, efContext);
             ValidateLinqToEntitiesUsageInSyntaxNodes(descendants, rootQueryableType, context, efContext, parameterNodes, treatAsWarning);
         }
 
@@ -80,11 +79,11 @@ namespace EFLinqAnalyzer
 
             foreach (var node in methodCallNodes)
             {
-                ValidateMethodCallInLinqExpression(node, rootQueryableType, context, efContext, treatAsWarning);
+                ValidateMethodCallInLinqExpression(node, rootQueryableType, context, efContext, parameterNodes, treatAsWarning);
             }
         }
 
-        internal static void ValidateMethodCallInLinqExpression(InvocationExpressionSyntax node, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, EFUsageContext efContext, bool treatAsWarning)
+        internal static void ValidateMethodCallInLinqExpression(InvocationExpressionSyntax node, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, EFUsageContext efContext, Dictionary<string, ContextualLinqParameter> parameterNodes, bool treatAsWarning)
         {
             string methodName = null;
             var memberExpr = node.Expression as MemberAccessExpressionSyntax;
@@ -97,8 +96,9 @@ namespace EFLinqAnalyzer
                 if (CanonicalMethodNames.IsLinqOperator(methodName))
                 {
                     var expr = memberExpr.Expression as MemberAccessExpressionSyntax;
-                    if (expr != null)
+                    if (expr != null) //a.b.<linq operator>()
                     {
+                        //What is b?
                         var member = expr.Name as IdentifierNameSyntax;
                         if (member != null)
                         {
@@ -123,12 +123,43 @@ namespace EFLinqAnalyzer
                                 }
                                 else
                                 {
-                                    //TODO: Code fix candidate
-                                    //
-                                    //In such a case, inject an .AsQueryable() before the LINQ operator call
-                                    //and add using System.Linq if required
-                                    var diagnostic = Diagnostic.Create(DiagnosticCodes.EFLINQ010, member.GetLocation(), memberName);
-                                    context.ReportDiagnostic(diagnostic);
+                                    //This potential navigation property resolves to multiple classes, see if we can resolve to a
+                                    //single one via contextual variables
+                                    var inst = expr.Expression as IdentifierNameSyntax;
+                                    if (inst != null)
+                                    {
+                                        string name = inst.Identifier.ValueText;
+                                        ContextualLinqParameter cparam;
+                                        if (parameterNodes.TryGetValue(name, out cparam) && 
+                                            cparam.ParameterType == ContextualLinqParameterType.Queryable &&
+                                            applicableClasses.Any(c => c.ClassType == cparam.QueryableType.ClassType))
+                                        {
+                                            //TODO: Code fix candidate
+                                            //
+                                            //In such a case, inject an .AsQueryable() before the LINQ operator call
+                                            //and add using System.Linq if required
+                                            var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ009 : DiagnosticCodes.EFLINQ008, member.GetLocation(), memberName, cparam.QueryableType.Name);
+                                            context.ReportDiagnostic(diagnostic);
+                                        }
+                                        else
+                                        {
+                                            //TODO: Code fix candidate
+                                            //
+                                            //In such a case, inject an .AsQueryable() before the LINQ operator call
+                                            //and add using System.Linq if required
+                                            var diagnostic = Diagnostic.Create(DiagnosticCodes.EFLINQ010, member.GetLocation(), memberName);
+                                            context.ReportDiagnostic(diagnostic);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //TODO: Code fix candidate
+                                        //
+                                        //In such a case, inject an .AsQueryable() before the LINQ operator call
+                                        //and add using System.Linq if required
+                                        var diagnostic = Diagnostic.Create(DiagnosticCodes.EFLINQ010, member.GetLocation(), memberName);
+                                        context.ReportDiagnostic(diagnostic);
+                                    }
                                 }
                             }
                             else
