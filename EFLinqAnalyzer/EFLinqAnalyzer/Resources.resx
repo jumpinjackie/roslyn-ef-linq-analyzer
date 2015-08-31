@@ -246,4 +246,22 @@
   <data name="EFLINQ014_TITLE" xml:space="preserve">
     <value>Property marked with [NotMapped] accessed within a potential LINQ to Entities expression</value>
   </data>
+  <data name="EFLINQ015_DESC" xml:space="preserve">
+    <value>Classes known to be Entity Types in LINQ to Entities cannot be used in a projection</value>
+  </data>
+  <data name="EFLINQ015_MSGFORMAT" xml:space="preserve">
+    <value>Type '{0}' is an entity type and cannot be used in a LINQ to Entities projection expression</value>
+  </data>
+  <data name="EFLINQ015_TITLE" xml:space="preserve">
+    <value>Entity type used in a LINQ to Entities projection expression</value>
+  </data>
+  <data name="EFLINQ016_DESC" xml:space="preserve">
+    <value>Classes known to be Entity Types in LINQ to Entities cannot be used in a projection. This is a warning because the analyzer cannot verify the source of the navigation property access</value>
+  </data>
+  <data name="EFLINQ016_MSGFORMAT" xml:space="preserve">
+    <value>Type '{0}' is an entity type and is used in a potential LINQ to Entities projection expression</value>
+  </data>
+  <data name="EFLINQ016_TITLE" xml:space="preserve">
+    <value>Entity type used in a potential LINQ to Entities projection expression</value>
+  </data>
 </root>

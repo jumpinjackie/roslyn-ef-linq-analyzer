@@ -13,7 +13,7 @@ namespace EFLinqAnalyzer
     public static class LinqExpressionValidator
     {
         /// <summary>
-        /// Validates the give lambda to see if it is a valid LINQ to Entities expression
+        /// Validates the given lambda to see if it is a valid LINQ to Entities expression
         /// </summary>
         /// <param name="lambda">The lambda syntax node</param>
         /// <param name="rootQueryableType">The type of the IQueryable instance where a known LINQ operator is invoked on with this lambda</param>
@@ -23,12 +23,26 @@ namespace EFLinqAnalyzer
         public static void ValidateLinqToEntitiesExpression(LambdaExpressionSyntax lambda, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, EFUsageContext efContext, bool treatAsWarning = false)
         {
             var descendants = lambda.DescendantNodes();
-
-            var accessNodes = descendants.OfType<MemberAccessExpressionSyntax>();
-            var methodCallNodes = descendants.OfType<InvocationExpressionSyntax>();
             var parameterNodes = descendants.OfType<ParameterSyntax>()
                                             .ToDictionary(p => p.Identifier.ValueText, p => new ContextualLinqParameter(p));
+            ValidateLinqToEntitiesUsageInSyntaxNodes(descendants, rootQueryableType, context, efContext, parameterNodes, treatAsWarning);
+        }
+
+        /// <summary>
+        /// Validates the series of syntax nodes for valid usages of LINQ to Entities constructs
+        /// </summary>
+        /// <param name="descendants"></param>
+        /// <param name="rootQueryableType"></param>
+        /// <param name="context"></param>
+        /// <param name="efContext"></param>
+        /// <param name="treatAsWarning"></param>
+        public static void ValidateLinqToEntitiesUsageInSyntaxNodes(IEnumerable<SyntaxNode> descendants, EFCodeFirstClassInfo rootQueryableType, SyntaxNodeAnalysisContext context, EFUsageContext efContext, Dictionary<string, ContextualLinqParameter> parameterNodes, bool treatAsWarning)
+        {
+            var accessNodes = descendants.OfType<MemberAccessExpressionSyntax>();
+            var methodCallNodes = descendants.OfType<InvocationExpressionSyntax>();
+            
             var stringNodes = descendants.OfType<InterpolatedStringExpressionSyntax>();
+            var objCreationNodes = descendants.OfType<ObjectCreationExpressionSyntax>();
 
             //Easy one, all interpolated strings are invalid, it's just a case of whether to raise an
             //error or warning
@@ -39,6 +53,23 @@ namespace EFLinqAnalyzer
             {
                 var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ012 : DiagnosticCodes.EFLINQ011, node.GetLocation());
                 context.ReportDiagnostic(diagnostic);
+            }
+
+            //Another easy one, any object creation expressions inside a known LINQ expression cannot involve an entity type
+            foreach (var node in objCreationNodes)
+            {
+                var objType = node.Type;
+                var si = context.SemanticModel.GetSymbolInfo(objType);
+                var ts = si.Symbol?.TryGetType();
+                if (ts != null)
+                {
+                    var cls = efContext.GetClassInfo(ts);
+                    if (cls != null)
+                    {
+                        var diagnostic = Diagnostic.Create(treatAsWarning ? DiagnosticCodes.EFLINQ016 : DiagnosticCodes.EFLINQ015, node.Type.GetLocation(), cls.Name);
+                        context.ReportDiagnostic(diagnostic);
+                    }
+                }
             }
 
             //Check for property accesses on read-only properties, expression-bodied members
@@ -79,7 +110,7 @@ namespace EFLinqAnalyzer
                             {
                                 //See if semantic model can help us disambiguate
                                 var si = context.SemanticModel.GetSymbolInfo(expr.Expression);
-                                var type = si.Symbol.TryGetType();
+                                var type = si.Symbol?.TryGetType();
                                 if (type != null)
                                 {
                                     var cls = efContext.GetClassInfo(type);
@@ -141,6 +172,39 @@ namespace EFLinqAnalyzer
             }
         }
 
+        public static bool MemberAccessIsAccessingDbContext(MemberAccessExpressionSyntax memberExpr, SyntaxNodeAnalysisContext context, EFUsageContext efContext, out EFCodeFirstClassInfo clsInfo)
+        {
+            clsInfo = null;
+            var compIdent = memberExpr.Expression as IdentifierNameSyntax;
+            var prop = memberExpr.Name;
+            if (compIdent != null && prop != null)
+            {
+                var si = context.SemanticModel.GetSymbolInfo(compIdent);
+                var type = si.Symbol?.TryGetType();
+                if (type != null)
+                {
+                    //$ident is a DbContext
+                    if (efContext.DbContexts.Contains(type))
+                    {
+                        //We're expecting $prop to be a symbol
+                        si = context.SemanticModel.GetSymbolInfo(prop);
+                        var ps = si.Symbol as IPropertySymbol;
+                        if (ps != null && ps.Type.MetadataName == EFSpecialIdentifiers.DbSet)
+                        {
+                            var nts = ps.Type as INamedTypeSymbol;
+                            if (nts != null)
+                            {
+                                var typeArg = nts.TypeArguments[0];
+                                clsInfo = efContext.GetClassInfo(typeArg);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         private static void ValidateNavigationPropertyAccess(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext context, EFUsageContext efContext, bool treatAsWarning, string memberName, EFCodeFirstClassInfo cls)
         {
             if (node.ArgumentList.Arguments.Count == 1 &&
@@ -152,7 +216,7 @@ namespace EFLinqAnalyzer
                     var si = context.SemanticModel.GetSymbolInfo(node.ArgumentList.Arguments[0].Expression);
                     if (si.Symbol?.Kind == SymbolKind.Local)
                     {
-                        var type = si.Symbol.TryGetType() as INamedTypeSymbol;
+                        var type = si.Symbol?.TryGetType() as INamedTypeSymbol;
 
                         //The variable inside our LINQ sub-operator is a Func<T, bool> where T
                         //is a known entity type
@@ -199,20 +263,20 @@ namespace EFLinqAnalyzer
             }
         }
 
-        internal static bool LocalIQueryableVarCanBeTracedBackToDbContext(ILocalSymbol lts, SyntaxNodeAnalysisContext context, EFUsageContext efContext, EFCodeFirstClassInfo clsInfo)
+        internal static bool SymbolCanBeTracedBackToDbContext(ISymbol sym, SyntaxNodeAnalysisContext context, EFUsageContext efContext, EFCodeFirstClassInfo clsInfo)
         {
             bool bTraced = false;
 
-            var assignments = lts.DeclaringSyntaxReferences
+            var assignments = sym.DeclaringSyntaxReferences
                                  .Where(decl => decl.GetSyntax()?.Kind() == SyntaxKind.EqualsValueClause)
                                  .Cast<EqualsValueClauseSyntax>()
-                                 .Concat(lts.DeclaringSyntaxReferences.SelectMany(decl => decl.GetSyntax()?.DescendantNodes().OfType<EqualsValueClauseSyntax>()));
+                                 .Concat(sym.DeclaringSyntaxReferences.SelectMany(decl => decl.GetSyntax()?.DescendantNodes().OfType<EqualsValueClauseSyntax>()));
             
             //Find applicable assignments where:
             //var myVar = $SOME_EXPR;
             var applicableAssignments = assignments.Select(asn => asn.Parent)
                                                    .OfType<VariableDeclaratorSyntax>()
-                                                   .Where(decl => decl.Identifier.ValueText == lts.Name);
+                                                   .Where(decl => decl.Identifier.ValueText == sym.Name);
 
             if (applicableAssignments.Any())
             {
@@ -235,6 +299,14 @@ namespace EFLinqAnalyzer
                                     {
                                         return DoesMethodReturnDbSet(method, context, efContext, clsInfo);
                                     }
+                                }
+                                break;
+                            case SyntaxKind.SimpleMemberAccessExpression:
+                                {
+                                    var member = (MemberAccessExpressionSyntax)eq.Value;
+                                    EFCodeFirstClassInfo cls;
+                                    bool isDbContext = MemberAccessIsAccessingDbContext(member, context, efContext, out cls);
+                                    return isDbContext && (cls == clsInfo);
                                 }
                                 break;
                         }
@@ -262,7 +334,7 @@ namespace EFLinqAnalyzer
                             var si = context.SemanticModel.GetSymbolInfo(sma.Name);
                             if (si.Symbol != null)
                             {
-                                var type = si.Symbol.TryGetType() as INamedTypeSymbol;
+                                var type = si.Symbol?.TryGetType() as INamedTypeSymbol;
                                 //Should be DbSet<T>, but let's just verify
                                 if (type?.MetadataName == EFSpecialIdentifiers.DbSet)
                                 {
@@ -283,7 +355,8 @@ namespace EFLinqAnalyzer
             var method = methodIdent.GetDeclaringMethod(context);
             var returnStatements = method.DescendantNodes().OfType<ReturnStatementSyntax>();
             //It has to be all so that we can be conclusive that all points of return a DbSet<T>
-            return returnStatements.All(ret => ReturnStatementTracesBackToDbSet(ret, context, clsInfo));
+            bool returnsDbSet = returnStatements.All(ret => ReturnStatementTracesBackToDbSet(ret, context, clsInfo));
+            return returnsDbSet;
         }
 
         private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType, EFUsageContext efContext, SyntaxNodeAnalysisContext context) => CanonicalMethodNames.IsKnownMethod(node, memberExpr, rootQueryableType, efContext, context);

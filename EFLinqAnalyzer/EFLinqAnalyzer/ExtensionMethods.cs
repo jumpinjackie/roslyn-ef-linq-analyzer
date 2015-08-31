@@ -26,6 +26,7 @@ namespace EFLinqAnalyzer
             var local = symbol as ILocalSymbol;
             var field = symbol as IFieldSymbol;
             var evt = symbol as IEventSymbol;
+            var nts = symbol as INamedTypeSymbol;
 
             return
                 prop?.Type ??
@@ -33,7 +34,7 @@ namespace EFLinqAnalyzer
                 local?.Type ??
                 field?.Type ??
                 evt?.Type ??
-                null;
+                nts;
         }
 
         /// <summary>

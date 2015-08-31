@@ -141,6 +141,7 @@
     <EmbeddedResource Include="SourceFiles.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>SourceFiles.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +230,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\EFLINQ013_LinqWhere.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ015.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EFLINQ016_IndirectDbSet.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

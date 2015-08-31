@@ -199,6 +199,26 @@ namespace EFLinqAnalyzer.Test
                         new[] {
                                 new DiagnosticResultLocation("Test0.cs", 30, 35)
                             }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ002",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "Bar", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 35, 36)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ002",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "Foo", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 36, 36)
+                            }
                 });
         }
 
@@ -245,6 +265,26 @@ namespace EFLinqAnalyzer.Test
                     Locations =
                         new[] {
                                 new DiagnosticResultLocation("Test0.cs", 30, 63)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ002",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "Foo", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 35, 57)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ002",
+                    Message = String.Format("Read-Only property '{0}' of type '{1}' used in LINQ to Entities expression", "Bar", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 35, 64)
                             }
                 });
         }
@@ -675,6 +715,60 @@ namespace EFLinqAnalyzer.Test
                     Locations =
                         new[] {
                                 new DiagnosticResultLocation("Test0.cs", 34, 36)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void EFLINQ015()
+        {
+            var test = SourceFiles.EFLINQ015;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ015",
+                    Message = String.Format("Type '{0}' is an entity type and cannot be used in a LINQ to Entities projection expression", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 29, 60)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ015",
+                    Message = String.Format("Type '{0}' is an entity type and cannot be used in a LINQ to Entities projection expression", "Thing"),
+                    Severity = DiagnosticSeverity.Error,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 31, 41)
+                            }
+                });
+        }
+
+        [TestMethod]
+        public void EFLINQ016_IndirectDbSet()
+        {
+            var test = SourceFiles.EFLINQ016_IndirectDbSet;
+            VerifyCSharpDiagnostic(test,
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ016",
+                    Message = String.Format("Type '{0}' is an entity type and is used in a potential LINQ to Entities projection expression", "Thing"),
+                    Severity = DiagnosticSeverity.Warning,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 38, 52)
+                            }
+                },
+                new DiagnosticResult
+                {
+                    Id = "EFLINQ016",
+                    Message = String.Format("Type '{0}' is an entity type and is used in a potential LINQ to Entities projection expression", "Thing"),
+                    Severity = DiagnosticSeverity.Warning,
+                    Locations =
+                        new[] {
+                                new DiagnosticResultLocation("Test0.cs", 40, 41)
                             }
                 });
         }

@@ -447,5 +447,59 @@ namespace EFLinqAnalyzer {
                 return ResourceManager.GetString("EFLINQ014_TITLE", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Classes known to be Entity Types in LINQ to Entities cannot be used in a projection.
+        /// </summary>
+        internal static string EFLINQ015_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ015_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type &apos;{0}&apos; is an entity type and cannot be used in a LINQ to Entities projection expression.
+        /// </summary>
+        internal static string EFLINQ015_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ015_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entity type used in a LINQ to Entities projection expression.
+        /// </summary>
+        internal static string EFLINQ015_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ015_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Classes known to be Entity Types in LINQ to Entities cannot be used in a projection. This is a warning because the analyzer cannot verify the source of the navigation property access.
+        /// </summary>
+        internal static string EFLINQ016_DESC {
+            get {
+                return ResourceManager.GetString("EFLINQ016_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type &apos;{0}&apos; is an entity type and is used in a potential LINQ to Entities projection expression.
+        /// </summary>
+        internal static string EFLINQ016_MSGFORMAT {
+            get {
+                return ResourceManager.GetString("EFLINQ016_MSGFORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entity type used in a potential LINQ to Entities projection expression.
+        /// </summary>
+        internal static string EFLINQ016_TITLE {
+            get {
+                return ResourceManager.GetString("EFLINQ016_TITLE", resourceCulture);
+            }
+        }
     }
 }

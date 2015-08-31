@@ -180,7 +180,7 @@ namespace EFLinqAnalyzer
                                         }
                                         else if (nts.MetadataName == EFSpecialIdentifiers.IQueryable)
                                         {
-                                            bool treatAsWarning = !LinqExpressionValidator.LocalIQueryableVarCanBeTracedBackToDbContext(lts, context, efContext, clsInfo);
+                                            bool treatAsWarning = !LinqExpressionValidator.SymbolCanBeTracedBackToDbContext(lts, context, efContext, clsInfo);
                                             LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning);
                                         }
                                     }
@@ -230,40 +230,33 @@ namespace EFLinqAnalyzer
             }
         }
 
-        static EFCodeFirstClassInfo GetQueryableEntityType(ExpressionSyntax expr, SyntaxNodeAnalysisContext context, EFUsageContext efContext)
+        static bool GetRootEntityTypeFromLinqQuery(ExpressionSyntax expr, SyntaxNodeAnalysisContext context, EFUsageContext efContext, out EFCodeFirstClassInfo clsInfo)
         {
+            clsInfo = null;
+
             // from $var in ??? 
             var memberExpr = expr as MemberAccessExpressionSyntax;
+            var ident = expr as IdentifierNameSyntax;
             if (memberExpr != null) //??? = $ident.$prop
             {
-                var ident = memberExpr.Expression as IdentifierNameSyntax;
-                var prop = memberExpr.Name;
-                if (ident != null && prop != null)
+                return LinqExpressionValidator.MemberAccessIsAccessingDbContext(memberExpr, context, efContext, out clsInfo);
+            }
+            else if (ident != null)
+            {
+                var si = context.SemanticModel.GetSymbolInfo(ident);
+                var local = si.Symbol as ILocalSymbol;
+                if (local != null)
                 {
-                    var si = context.SemanticModel.GetSymbolInfo(ident);
-                    var type = si.Symbol?.TryGetType();
-                    if (type != null)
+                    var nts = local.Type as INamedTypeSymbol;
+                    if (nts != null && nts.TypeArguments.Length == 1)
                     {
-                        //$ident is a DbContext
-                        if (efContext.DbContexts.Contains(type))
-                        {
-                            //We're expecting $prop to be a symbol
-                            si = context.SemanticModel.GetSymbolInfo(prop);
-                            var ps = si.Symbol as IPropertySymbol;
-                            if (ps != null && ps.Type.MetadataName == EFSpecialIdentifiers.DbSet)
-                            {
-                                var nts = ps.Type as INamedTypeSymbol;
-                                if (nts != null)
-                                {
-                                    var typeArg = nts.TypeArguments[0];
-                                    return efContext.GetClassInfo(typeArg);
-                                }
-                            }
-                        }
+                        var typeArg = nts.TypeArguments[0];
+                        clsInfo = efContext.GetClassInfo(typeArg);
+                        return LinqExpressionValidator.SymbolCanBeTracedBackToDbContext(local, context, efContext, clsInfo);
                     }
                 }
             }
-            return null;
+            return false;
         }
 
         private static void AnalyzeQueryExpression(SyntaxNodeAnalysisContext context, EFUsageContext efContext, QueryExpressionSyntax query)
@@ -274,20 +267,18 @@ namespace EFLinqAnalyzer
 
 
             //First item on checklist, find out our root queryable
-            var cls = GetQueryableEntityType(query.FromClause.Expression, context, efContext);
+            EFCodeFirstClassInfo cls;
+            bool isConnectedToDbContext = GetRootEntityTypeFromLinqQuery(query.FromClause.Expression, context, efContext, out cls);
             if (cls != null)
             {
-                bool treatAsWarning = false;
+                bool treatAsWarning = !isConnectedToDbContext;
 
                 var paramNodes = new Dictionary<string, ContextualLinqParameter>();
                 var fromVar = new ContextualLinqParameter(query.FromClause.Identifier);
                 paramNodes[fromVar.Name] = fromVar;
                 var descendants = query.Body.DescendantNodes();
-                var memberAccesses = descendants.OfType<MemberAccessExpressionSyntax>();
-                foreach (var access in memberAccesses)
-                {
-                    LinqExpressionValidator.ValidateMemberAccessInLinqExpression(access, cls, context, paramNodes, treatAsWarning);
-                }
+
+                LinqExpressionValidator.ValidateLinqToEntitiesUsageInSyntaxNodes(descendants, cls, context, efContext, paramNodes, treatAsWarning);
             }
         }
     }

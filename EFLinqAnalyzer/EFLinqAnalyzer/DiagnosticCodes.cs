@@ -178,6 +178,30 @@ namespace EFLinqAnalyzer
             isEnabledByDefault: true,
             description: new LocalizableResourceString(nameof(Resources.EFLINQ014_DESC), Resources.ResourceManager, typeof(Resources)));
 
+        /// <summary>
+        /// EFLINQ015: Entity type used in a LINQ to Entities projection expression
+        /// </summary>
+        public static DiagnosticDescriptor EFLINQ015 = new DiagnosticDescriptor(
+            id: nameof(EFLINQ015),
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ015_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ015_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: Resources.DIAGNOSTIC_CATEGORY,
+            defaultSeverity: DiagnosticSeverity.Error,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ015_DESC), Resources.ResourceManager, typeof(Resources)));
+
+        /// <summary>
+        /// EFLINQ016: Entity type used in a potential LINQ to Entities projection expression
+        /// </summary>
+        public static DiagnosticDescriptor EFLINQ016 = new DiagnosticDescriptor(
+            id: nameof(EFLINQ016),
+            title: new LocalizableResourceString(nameof(Resources.EFLINQ016_TITLE), Resources.ResourceManager, typeof(Resources)),
+            messageFormat: new LocalizableResourceString(nameof(Resources.EFLINQ016_MSGFORMAT), Resources.ResourceManager, typeof(Resources)),
+            category: Resources.DIAGNOSTIC_CATEGORY,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: new LocalizableResourceString(nameof(Resources.EFLINQ016_DESC), Resources.ResourceManager, typeof(Resources)));
+
         public static ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
             EFLINQ001,
             EFLINQ002,
@@ -192,6 +216,8 @@ namespace EFLinqAnalyzer
             EFLINQ011,
             EFLINQ012,
             EFLINQ013,
-            EFLINQ014);
+            EFLINQ014,
+            EFLINQ015,
+            EFLINQ016);
     }
 }

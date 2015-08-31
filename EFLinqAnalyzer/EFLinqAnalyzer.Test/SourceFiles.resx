@@ -196,6 +196,12 @@
   <data name="EFLINQ013_LinqWhere" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\EFLINQ013_LinqWhere.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="EFLINQ015" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\EFLINQ015.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="EFLINQ016_IndirectDbSet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\EFLINQ016_IndirectDbSet.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="NonEFClassWithReadOnlyProperty" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\NonEFClassWithReadOnlyProperty.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

@@ -805,10 +805,8 @@ namespace EFLinqAnalyzer.Test {
         ///    {
         ///        static IQueryable&lt;Thing&gt; GetThings(MyContext context)
         ///        {
-        ///            return context.Things;
-        ///        }
-        ///
-        ///        public static void [rest of string was truncated]&quot;;.
+        ///            if (new Random().Next() % 2 == 0)
+        ///                return Enume [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string EFLINQ012_LinqSelect {
             get {
@@ -875,6 +873,70 @@ namespace EFLinqAnalyzer.Test {
         internal static string EFLINQ013_LinqWhere {
             get {
                 return ResourceManager.GetString("EFLINQ013_LinqWhere", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///using System.Collections.Generic;
+        ///using System.Linq;
+        ///using System.Text;
+        ///using System.Threading.Tasks;
+        ///using System.Diagnostics;
+        ///using System.Data.Entity;
+        ///using System.ComponentModel.DataAnnotations.Schema;
+        ///
+        ///namespace ConsoleApplication1
+        ///{
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///    }
+        ///
+        ///    public class Thing
+        ///    {
+        ///        public string Foo { get; set; }
+        ///        public string Bar { get; set; }
+        ///    }
+        ///
+        ///    class Program
+        ///  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EFLINQ015 {
+            get {
+                return ResourceManager.GetString("EFLINQ015", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///using System.Collections.Generic;
+        ///using System.Linq;
+        ///using System.Text;
+        ///using System.Threading.Tasks;
+        ///using System.Diagnostics;
+        ///using System.Data.Entity;
+        ///using System.ComponentModel.DataAnnotations.Schema;
+        ///
+        ///namespace ConsoleApplication1
+        ///{
+        ///    public class MyContext : DbContext
+        ///    {
+        ///        public DbSet&lt;Thing&gt; Things { get; set; }
+        ///    }
+        ///
+        ///    public class Thing
+        ///    {
+        ///        public string Foo { get; set; }
+        ///        public string Bar { get; set; }
+        ///    }
+        ///
+        ///    class Program
+        ///  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string EFLINQ016_IndirectDbSet {
+            get {
+                return ResourceManager.GetString("EFLINQ016_IndirectDbSet", resourceCulture);
             }
         }
         
