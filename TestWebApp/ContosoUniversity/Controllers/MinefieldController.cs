@@ -342,6 +342,70 @@ namespace ContosoUniversity.Controllers
             return View("QueryResult", vm);
         }
 
+        public ActionResult ProjectionWithEntityType_EMS()
+        {
+            var vm = new QueryResultViewModel<StudentDisplay>();
+            try
+            {
+                var results = db.Students
+                                .Select(s => new Student()
+                                {
+                                    ID = s.ID,
+                                    FirstMidName = s.FirstMidName,
+                                    LastName = s.LastName,
+                                    EnrollmentDate = s.EnrollmentDate
+                                });
+                vm.Results = results.ToArray().Select(s => new StudentDisplay()
+                {
+                    ID = s.ID,
+                    FirstMidName = s.FirstMidName,
+                    LastName = s.LastName,
+                    FullName = s.LastName + ", " + s.FirstMidName,
+                    EnrollmentDate = s.EnrollmentDate
+                }).ToArray();
+                Response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                vm.Results = null;
+                vm.Exception = ex;
+                Response.StatusCode = 500;
+            }
+            return View("QueryResult", vm);
+        }
+
+        public ActionResult ProjectionWithEntityType_QS()
+        {
+            var vm = new QueryResultViewModel<StudentDisplay>();
+            try
+            {
+                var results = from s in db.Students
+                              select new Student()
+                              {
+                                  ID = s.ID,
+                                  FirstMidName = s.FirstMidName,
+                                  LastName = s.LastName,
+                                  EnrollmentDate = s.EnrollmentDate
+                              };
+                vm.Results = results.ToArray().Select(s => new StudentDisplay()
+                {
+                    ID = s.ID,
+                    FirstMidName = s.FirstMidName,
+                    LastName = s.LastName,
+                    FullName = s.LastName + ", " + s.FirstMidName,
+                    EnrollmentDate = s.EnrollmentDate
+                }).ToArray();
+                Response.StatusCode = 200;
+            }
+            catch (Exception ex)
+            {
+                vm.Results = null;
+                vm.Exception = ex;
+                Response.StatusCode = 500;
+            }
+            return View("QueryResult", vm);
+        }
+
         private IEnumerable<Link> GetLinks()
         {
             var controllerName = "Minefield";
@@ -357,6 +421,8 @@ namespace ContosoUniversity.Controllers
             yield return new Link(controllerName, nameof(BadEnrollmentFilter_QS), "Test: LINQ query with bad related enrollments filter (Query syntax)");
             yield return new Link(controllerName, nameof(SelectUseOfUnmappedProperty_EMS), "Test: LINQ query with projection containing un-mapped property (Extension Method syntax)");
             yield return new Link(controllerName, nameof(SelectUseOfUnmappedProperty_QS), "Test: LINQ query with projection containing un-mapped property (Query syntax)");
+            yield return new Link(controllerName, nameof(ProjectionWithEntityType_EMS), "Test: LINQ projection with entity type (Extension Method syntax)");
+            yield return new Link(controllerName, nameof(ProjectionWithEntityType_QS), "Test: LINQ projection with entity type (Query syntax)");
         }
     }
 }
