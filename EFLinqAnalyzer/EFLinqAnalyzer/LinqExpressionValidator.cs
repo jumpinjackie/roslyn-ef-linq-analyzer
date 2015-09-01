@@ -220,7 +220,7 @@ namespace EFLinqAnalyzer
                         //We're expecting $prop to be a symbol
                         si = context.SemanticModel.GetSymbolInfo(prop);
                         var ps = si.Symbol as IPropertySymbol;
-                        if (ps != null && ps.Type.MetadataName == EFSpecialIdentifiers.DbSet)
+                        if (ps.IsDbSetProperty())
                         {
                             var nts = ps.Type as INamedTypeSymbol;
                             if (nts != null)
@@ -367,7 +367,7 @@ namespace EFLinqAnalyzer
                             {
                                 var type = si.Symbol?.TryGetType() as INamedTypeSymbol;
                                 //Should be DbSet<T>, but let's just verify
-                                if (type?.MetadataName == EFSpecialIdentifiers.DbSet)
+                                if (type.IsDbSet())
                                 {
                                     //T is our type
                                     if (clsInfo?.ClassType == type.TypeArguments[0])

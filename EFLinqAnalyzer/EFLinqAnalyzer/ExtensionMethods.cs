@@ -11,6 +11,23 @@ namespace EFLinqAnalyzer
 {
     public static class ExtensionMethods
     {
+        public static bool IsDbSetProperty(this IPropertySymbol p)
+        {
+            return p?.Type?.MetadataName == EFSpecialIdentifiers.DbSet ||
+                   p?.Type?.MetadataName == EFSpecialIdentifiers.IDbSet;
+        }
+
+        public static bool IsDbSet(this ITypeSymbol nts)
+        {
+            return nts?.MetadataName == EFSpecialIdentifiers.DbSet ||
+                   nts?.MetadataName == EFSpecialIdentifiers.IDbSet;
+        }
+
+        public static bool IsQueryable(this ITypeSymbol nts)
+        {
+            return nts?.MetadataName == EFSpecialIdentifiers.IQueryable;
+        }
+
         /// <summary>
         /// Attempts to get the type of the given symbol
         /// </summary>

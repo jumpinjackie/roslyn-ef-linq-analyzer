@@ -72,7 +72,7 @@ namespace EFLinqAnalyzer
                 //Get all DbSet properties
                 var dbSetProperties = clsSym.GetMembers()
                                             .OfType<IPropertySymbol>()
-                                            .Where(p => p?.Type?.MetadataName == EFSpecialIdentifiers.DbSet);
+                                            .Where(p => p.IsDbSetProperty());
 
                 foreach (var propSym in dbSetProperties)
                 {
@@ -146,7 +146,7 @@ namespace EFLinqAnalyzer
                                     if (nts != null)
                                     {
                                         //Like a DbSet<T>?
-                                        if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
+                                        if (nts.IsDbSet())
                                         {
                                             //That is part of a class derived from DbContext?
                                             if (pts?.ContainingType?.BaseType?.Name == EFSpecialIdentifiers.DbContext)
@@ -171,14 +171,14 @@ namespace EFLinqAnalyzer
                                         //This is some generic type with one type argument
                                         var typeArg = nts.TypeArguments[0];
                                         var clsInfo = efContext.GetClassInfo(typeArg);
-                                        if (nts.MetadataName == EFSpecialIdentifiers.DbSet)
+                                        if (nts.IsDbSet())
                                         {
                                             //TODO: Should still actually check that it is ultimately assigned
                                             //from a DbSet<T> property of a DbContext derived class
 
                                             LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
                                         }
-                                        else if (nts.MetadataName == EFSpecialIdentifiers.IQueryable)
+                                        else if (nts.IsQueryable())
                                         {
                                             bool treatAsWarning = !LinqExpressionValidator.SymbolCanBeTracedBackToDbContext(lts, context, efContext, clsInfo);
                                             LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning);

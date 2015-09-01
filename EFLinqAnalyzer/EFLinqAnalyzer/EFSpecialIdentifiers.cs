@@ -51,6 +51,13 @@ namespace EFLinqAnalyzer
 
         /// <summary>
         /// <![CDATA[
+        /// IDbSet<T>
+        /// ]]>
+        /// </summary>
+        public const string IDbSet = "IDbSet`1";
+
+        /// <summary>
+        /// <![CDATA[
         /// IQueryable<T>
         /// ]]>
         /// </summary>

@@ -65,19 +65,24 @@ namespace EFLinqAnalyzer
                 var dbSetProps = dbc.Locations.SelectMany(loc =>
                 {
                     IEnumerable<IPropertySymbol> propSyms = null;
+                    
                     try
                     {
-                        //TODO: Guard against out of bounds symbol search (partial classes known
-                        //to cause this case), right now it's brace for impact
                         var syms = _context.SemanticModel
                                            .LookupSymbols(loc.SourceSpan.Start, dbc);
 
                         propSyms = syms.OfType<IPropertySymbol>()
-                                       .Where(t => t.Type.MetadataName == EFSpecialIdentifiers.DbSet);
+                                       .Where(t => t.IsDbSetProperty());
                     }
                     catch
                     {
-                        propSyms = Enumerable.Empty<IPropertySymbol>();
+                        //Symbol search was out of bounds. Most likely culprit: Partial classes, so
+                        //make a new SemanticModel using the symbol's SyntaxTree and retry
+                        var semModel = _context.SemanticModel.Compilation.GetSemanticModel(loc.SourceTree);
+                        var syms = semModel.LookupSymbols(loc.SourceSpan.Start, dbc);
+
+                        propSyms = syms.OfType<IPropertySymbol>()
+                                       .Where(t => t.IsDbSetProperty());
                     }
                     return propSyms;
                 }).Distinct();
@@ -96,8 +101,6 @@ namespace EFLinqAnalyzer
                 var ns = et.ContainingNamespace;
                 var clsSymbol = et.Locations.SelectMany(loc =>
                 {
-                    //TODO: Guard against out of bounds symbol search (partial classes known
-                    //to cause this case), right now it's brace for impact
                     IEnumerable<INamedTypeSymbol> syms = null;
                     try
                     {
@@ -107,7 +110,11 @@ namespace EFLinqAnalyzer
                     }
                     catch
                     {
-                        syms = Enumerable.Empty<INamedTypeSymbol>();
+                        //Symbol search was out of bounds. Most likely culprit: Partial classes, so
+                        //make a new SemanticModel using the symbol's SyntaxTree and retry
+                        var semModel = _context.SemanticModel.Compilation.GetSemanticModel(loc.SourceTree);
+                        syms = semModel.LookupNamespacesAndTypes(loc.SourceSpan.Start, ns, et.Name)
+                                       .OfType<INamedTypeSymbol>();
                     }
                     return syms;
                 }).Distinct().FirstOrDefault();
@@ -117,8 +124,6 @@ namespace EFLinqAnalyzer
 
                 var clsSymbols = clsSymbol.Locations.SelectMany(loc =>
                 {
-                    //TODO: Guard against out of bounds symbol search (partial classes known
-                    //to cause this case), right now it's brace for impact
                     IEnumerable<ISymbol> syms = null;
                     try
                     {
@@ -127,7 +132,10 @@ namespace EFLinqAnalyzer
                     }
                     catch
                     {
-                        syms = Enumerable.Empty<ISymbol>();
+                        //Symbol search was out of bounds. Most likely culprit: Partial classes, so
+                        //make a new SemanticModel using the symbol's SyntaxTree and retry
+                        var semModel = _context.SemanticModel.Compilation.GetSemanticModel(loc.SourceTree);
+                        syms = semModel.LookupSymbols(loc.SourceSpan.Start, clsSymbol);
                     }
                     return syms;
                 }).Distinct();
