@@ -171,17 +171,20 @@ namespace EFLinqAnalyzer
                                         //This is some generic type with one type argument
                                         var typeArg = nts.TypeArguments[0];
                                         var clsInfo = efContext.GetClassInfo(typeArg);
-                                        if (nts.IsDbSet())
+                                        if (clsInfo != null)
                                         {
-                                            //TODO: Should still actually check that it is ultimately assigned
-                                            //from a DbSet<T> property of a DbContext derived class
+                                            if (nts.IsDbSet())
+                                            {
+                                                //TODO: Should still actually check that it is ultimately assigned
+                                                //from a DbSet<T> property of a DbContext derived class
 
-                                            LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
-                                        }
-                                        else if (nts.IsQueryable())
-                                        {
-                                            bool treatAsWarning = !LinqExpressionValidator.SymbolCanBeTracedBackToDbContext(lts, context, efContext, clsInfo);
-                                            LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning);
+                                                LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext);
+                                            }
+                                            else if (nts.IsQueryable())
+                                            {
+                                                bool treatAsWarning = !LinqExpressionValidator.SymbolCanBeTracedBackToDbContext(lts, context, efContext, clsInfo);
+                                                LinqExpressionValidator.ValidateLinqToEntitiesExpression(lambda, clsInfo, context, efContext, treatAsWarning);
+                                            }
                                         }
                                     }
                                 }
@@ -252,7 +255,10 @@ namespace EFLinqAnalyzer
                     {
                         var typeArg = nts.TypeArguments[0];
                         clsInfo = efContext.GetClassInfo(typeArg);
-                        return LinqExpressionValidator.SymbolCanBeTracedBackToDbContext(local, context, efContext, clsInfo);
+                        if (clsInfo != null)
+                        {
+                            return LinqExpressionValidator.SymbolCanBeTracedBackToDbContext(local, context, efContext, clsInfo);
+                        }
                     }
                 }
             }

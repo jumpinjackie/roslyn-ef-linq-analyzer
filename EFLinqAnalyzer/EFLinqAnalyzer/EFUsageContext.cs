@@ -19,7 +19,7 @@ namespace EFLinqAnalyzer
     {
         private SyntaxNodeAnalysisContext _context;
         private ReadOnlyCollection<INamedTypeSymbol> _dbContextSymbols;
-        private ReadOnlyCollection<ITypeSymbol> _entityTypeSymbols;
+        private ReadOnlyCollection<INamedTypeSymbol> _entityTypeSymbols;
 
         private Dictionary<ITypeSymbol, EFCodeFirstClassInfo> _clsInfo;
         private Dictionary<string, List<EFCodeFirstClassInfo>> _propertiesToCls;
@@ -62,92 +62,37 @@ namespace EFLinqAnalyzer
             //TODO: Need to follow any related types that hang off of the primary entities (referenced via DbSet<T>)
             var entityTypes = _dbContextSymbols.SelectMany(dbc =>
             {
-                var dbSetProps = dbc.Locations.SelectMany(loc =>
-                {
-                    IEnumerable<IPropertySymbol> propSyms = null;
-                    
-                    try
-                    {
-                        var syms = _context.SemanticModel
-                                           .LookupSymbols(loc.SourceSpan.Start, dbc);
+                var dbSetProps = dbc.GetMembers()
+                    .Where(m => m.Kind == SymbolKind.Property)
+                    .Cast<IPropertySymbol>()
+                    .Where(t => t.IsDbSetProperty());
 
-                        propSyms = syms.OfType<IPropertySymbol>()
-                                       .Where(t => t.IsDbSetProperty());
-                    }
-                    catch
-                    {
-                        //Symbol search was out of bounds. Most likely culprit: Partial classes, so
-                        //make a new SemanticModel using the symbol's SyntaxTree and retry
-                        var semModel = _context.SemanticModel.Compilation.GetSemanticModel(loc.SourceTree);
-                        var syms = semModel.LookupSymbols(loc.SourceSpan.Start, dbc);
-
-                        propSyms = syms.OfType<IPropertySymbol>()
-                                       .Where(t => t.IsDbSetProperty());
-                    }
-                    return propSyms;
-                }).Distinct();
                 return dbSetProps;
             })
-            .Select(t => t.Type as INamedTypeSymbol)
-            .Where(t => t != null)
-            .Select(t => t.TypeArguments.First());
+            .Select(p => p.Type)
+            .OfType<INamedTypeSymbol>()
+            .Where(t => t.TypeArguments.Length == 1)
+            .Select(t => t.TypeArguments.First())
+            .OfType<INamedTypeSymbol>();
 
-            _entityTypeSymbols = new ReadOnlyCollection<ITypeSymbol>(entityTypes.ToList());
+            _entityTypeSymbols = new ReadOnlyCollection<INamedTypeSymbol>(entityTypes.ToList());
 
             _clsInfo = new Dictionary<ITypeSymbol, EFCodeFirstClassInfo>();
             _propertiesToCls = new Dictionary<string, List<EFCodeFirstClassInfo>>();
-            foreach (var et in _entityTypeSymbols)
+            foreach (var clsSymbol in _entityTypeSymbols)
             {
-                var ns = et.ContainingNamespace;
-                var clsSymbol = et.Locations.SelectMany(loc =>
-                {
-                    IEnumerable<INamedTypeSymbol> syms = null;
-                    try
-                    {
-                        syms = _context.SemanticModel
-                                       .LookupNamespacesAndTypes(loc.SourceSpan.Start, ns, et.Name)
-                                       .OfType<INamedTypeSymbol>();
-                    }
-                    catch
-                    {
-                        //Symbol search was out of bounds. Most likely culprit: Partial classes, so
-                        //make a new SemanticModel using the symbol's SyntaxTree and retry
-                        var semModel = _context.SemanticModel.Compilation.GetSemanticModel(loc.SourceTree);
-                        syms = semModel.LookupNamespacesAndTypes(loc.SourceSpan.Start, ns, et.Name)
-                                       .OfType<INamedTypeSymbol>();
-                    }
-                    return syms;
-                }).Distinct().FirstOrDefault();
-
-                if (clsSymbol == null)
-                    continue;
-
-                var clsSymbols = clsSymbol.Locations.SelectMany(loc =>
-                {
-                    IEnumerable<ISymbol> syms = null;
-                    try
-                    {
-                        syms = _context.SemanticModel
-                                       .LookupSymbols(loc.SourceSpan.Start, clsSymbol);
-                    }
-                    catch
-                    {
-                        //Symbol search was out of bounds. Most likely culprit: Partial classes, so
-                        //make a new SemanticModel using the symbol's SyntaxTree and retry
-                        var semModel = _context.SemanticModel.Compilation.GetSemanticModel(loc.SourceTree);
-                        syms = semModel.LookupSymbols(loc.SourceSpan.Start, clsSymbol);
-                    }
-                    return syms;
-                }).Distinct();
-
+                var clsSymbols = clsSymbol.GetMembers()
+                                              .Where(m => m.Kind == SymbolKind.Property)
+                                              .Cast<IPropertySymbol>();
                 var clsInfo = new EFCodeFirstClassInfo(clsSymbol);
-                clsInfo.AddProperties(clsSymbols.OfType<IPropertySymbol>(), (sym) => {
+                clsInfo.AddProperties(clsSymbols, (sym) =>
+                {
                     if (!_propertiesToCls.ContainsKey(sym.Name))
                         _propertiesToCls[sym.Name] = new List<EFCodeFirstClassInfo>();
                     _propertiesToCls[sym.Name].Add(clsInfo);
                 });
 
-                _clsInfo[et] = clsInfo;
+                _clsInfo[clsSymbol] = clsInfo;
             }
             return _clsInfo.Count > 0;
         }

@@ -384,10 +384,15 @@ namespace EFLinqAnalyzer
         private static bool DoesMethodReturnDbSet(IdentifierNameSyntax methodIdent, SyntaxNodeAnalysisContext context, EFUsageContext efContext, EFCodeFirstClassInfo clsInfo)
         {
             var method = methodIdent.GetDeclaringMethod(context);
-            var returnStatements = method.DescendantNodes().OfType<ReturnStatementSyntax>();
-            //It has to be all so that we can be conclusive that all points of return a DbSet<T>
-            bool returnsDbSet = returnStatements.All(ret => ReturnStatementTracesBackToDbSet(ret, context, clsInfo));
-            return returnsDbSet;
+            //TODO: Handle cases of lambda/Func<T, ...> invocation
+            if (method != null)
+            {
+                var returnStatements = method.DescendantNodes().OfType<ReturnStatementSyntax>();
+                //It has to be all so that we can be conclusive that all points of return a DbSet<T>
+                bool returnsDbSet = returnStatements.All(ret => ReturnStatementTracesBackToDbSet(ret, context, clsInfo));
+                return returnsDbSet;
+            }
+            return false;
         }
 
         private static bool IsSupportedLinqToEntitiesMethod(InvocationExpressionSyntax node, MemberAccessExpressionSyntax memberExpr, EFCodeFirstClassInfo rootQueryableType, EFUsageContext efContext, SyntaxNodeAnalysisContext context) => CanonicalMethodNames.IsKnownMethod(node, memberExpr, rootQueryableType, efContext, context);
