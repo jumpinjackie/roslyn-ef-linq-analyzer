@@ -1,3 +1,7 @@
+# No longer maintained
+
+This analyzer could not progress beyond the "toy/demoware" stage, so the repository has been archived so signify that I am no longer maintaining/developing it. Do whatever you want with this code (within the bounds of the MIT license)
+
 # roslyn-ef-linq-analyzer
 
 A Roslyn Analyzer to check for common gotchas with LINQ expressions when used with Entity Framework
@@ -38,7 +42,7 @@ Analyzer Assumptions
 --------------------
 
  * Your code is in C#. VB.net is not supported by this analyzer
- * The code under analysis is targeting the current version of Entity Framework (6.1.x)
+ * The code under analysis is targeting the current version of Entity Framework (6.1.x). This does not work with EFCore.
  * You are using a Code First entity model
  * The LINQ queries chain directly off of the DbSet property in the DbContext (for any calls against IQueryable<T> that cannot be determined to originate from a DbSet<T> property of a DbContext any errors are downgraded to warnings)
  
@@ -54,3 +58,8 @@ Lots of things :) But a rough list:
  * Ensure that these gotchas are not falsely reported in valid contexts (eg. LINQ to Objects)
  * Support analysis of IQueryable<T> call chains where we know that the root IQueryable<T> is a DbSet<T>
  * Refine the LINQ method whitelist to check for actual supported overloads instead of just by method name
+  
+License
+-------
+
+MIT
